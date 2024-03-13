@@ -1,5 +1,4 @@
-from datetime import datetime
-from sqlalchemy import create_engine, func
+from sqlalchemy import create_engine, func, inspect
 from sqlalchemy.orm import configure_mappers, sessionmaker
 from api.schemas.price_history import PriceHistoryUpdate
 from api.schemas.product import ProductCreate, ProductRead
@@ -18,7 +17,11 @@ class DatabaseManager:
 
         self.Session = sessionmaker(bind=self.engine)
         self.session = self.Session()
-        Base.metadata.create_all(self.engine)
+        
+        insp = inspect(self.engine)
+        if not insp.has_table('products'):
+            # Criar a tabela 'products' se ela não existir
+            Base.metadata.create_all(self.engine)
 
     def create_product(self, product_data: ProductCreate):
         try:

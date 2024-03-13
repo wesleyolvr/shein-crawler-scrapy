@@ -14,3 +14,4 @@ REDIS_URL = database_config['redis_url']
 REDIS_EXPIRE_TIME = int(database_config['redis_expire_time'])
 KAFKA_SERVERS = database_config['kafka_servers']
 KAFKA_TOPIC_OUT = database_config['kafka_topic_out']
+KAFKA_TOPIC_IN = database_config['kafka_topic_in']

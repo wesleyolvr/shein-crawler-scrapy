@@ -7,9 +7,9 @@ class KafkaConsumer:
     def __init__(self, topic):
         self.consumer = Consumer(
             {
-                "bootstrap.servers": "localhost:9092",
-                "group.id": "my_consumer_group",
-                "auto.offset.reset": "earliest",
+                'bootstrap.servers': 'localhost:9092',
+                'group.id': 'my_consumer_group',
+                'auto.offset.reset': 'earliest',
             }
         )
         self.topic = topic
@@ -19,12 +19,12 @@ class KafkaConsumer:
         while True:
             msg = self.consumer.poll(5.0)
             if msg is None:
-                logger.info("Não há mensagens")
+                logger.info('Não há mensagens')
                 continue
             if msg.error():
-                logger.error(f"Erro no consumidor: {msg.error()}")
+                logger.error(f'Erro no consumidor: {msg.error()}')
                 continue
-            msg_txt = msg.value().decode("utf-8")
+            msg_txt = msg.value().decode('utf-8')
             # logger.info(f'Mensagem recebida: {msg_txt}')
             yield msg_txt
 

@@ -1,40 +1,41 @@
 import json
 import sqlite3
+
 from confluent_kafka import Producer
-from scrapy.exceptions import DropItem
 from scrapy import signals
-from scrapy.utils.project import get_project_settings
-from scrapy.crawler import CrawlerRunner
+from scrapy.exceptions import DropItem
 
 
 class KafkaPipeline:
     def __init__(self, kafka_servers, kafka_topic):
         self.producer = Producer(
             {
-                "bootstrap.servers": kafka_servers,
-                "client.id": "python-producer",
+                'bootstrap.servers': kafka_servers,
+                'client.id': 'python-producer',
             }
         )
         self.topic = kafka_topic
 
     @classmethod
     def from_crawler(cls, crawler):
-        kafka_servers = crawler.settings.get("KAFKA_SERVERS")
-        kafka_topic = crawler.settings.get("KAFKA_TOPIC")
+        kafka_servers = crawler.settings.get('KAFKA_SERVERS')
+        kafka_topic = crawler.settings.get('KAFKA_TOPIC')
         if not kafka_servers or not kafka_topic:
-            raise ValueError("KAFKA_SERVERS or KAFKA_TOPIC is not set")
+            raise ValueError('KAFKA_SERVERS or KAFKA_TOPIC is not set')
         pipeline = cls(kafka_servers, kafka_topic)
-        crawler.signals.connect(pipeline.spider_closed, signal=signals.spider_closed)
+        crawler.signals.connect(
+            pipeline.spider_closed, signal=signals.spider_closed
+        )
         return pipeline
 
     def process_item(self, item, spider):
         item_dict = dict(item)
-        message = json.dumps(item_dict).encode("utf-8")
+        message = json.dumps(item_dict).encode('utf-8')
         try:
-            self.producer.produce("produtos", message)
+            self.producer.produce('produtos', message)
             self.producer.flush()
         except Exception as e:
-            raise DropItem(f"Failed to send item to Kafka: {str(e)}")
+            raise DropItem(f'Failed to send item to Kafka: {str(e)}')
         return item
 
     def spider_closed(self, spider, reason):
@@ -42,14 +43,14 @@ class KafkaPipeline:
 
     def send_item_to_kafka(self, item):
         # Envia o item para o tópico "produtos"
-        message = json.dumps(item).encode("utf-8")
-        self.producer.produce("produtos", message)
+        message = json.dumps(item).encode('utf-8')
+        self.producer.produce('produtos', message)
         self.producer.flush()
 
 
 class SQLitePipeline:
     def open_spider(self, spider):
-        self.conn = sqlite3.connect("products.db")
+        self.conn = sqlite3.connect('products.db')
         self.cursor = self.conn.cursor()
 
         self.setup_database()
@@ -88,14 +89,14 @@ class SQLitePipeline:
 
     def process_item(self, item, spider):
         # Verificar se o produto já existe no banco de dados pelo ID
-        self.cursor.execute("SELECT 1 FROM products WHERE id=?", (item["id"],))
+        self.cursor.execute('SELECT 1 FROM products WHERE id=?', (item['id'],))
         existing_product = self.cursor.fetchone()
         if existing_product:
             # Se o produto já existir, não faz nada
             return item
 
         # Converter a lista de imagens para uma string JSON
-        imgs_str = json.dumps(item["imgs"])
+        imgs_str = json.dumps(item['imgs'])
 
         # Inserir o item no banco de dados
         self.cursor.execute(
@@ -107,23 +108,23 @@ class SQLitePipeline:
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
             (
-                item["id"],
-                item["name"],
-                item["sn"],
-                item["url"],
+                item['id'],
+                item['name'],
+                item['sn'],
+                item['url'],
                 imgs_str,
-                item["category"],
-                item["store_code"],
-                item["is_on_sale"],
-                item["price_real_symbol"],
-                item["price_real"],
-                item["price_us_symbol"],
-                item["price_us"],
-                item["discountPrice_real_symbol"],
-                item["discountPrice_price_real"],
-                item["discountPrice_price_us_symbol"],
-                item["discountPrice_us"],
-                item["datetime_collected"],
+                item['category'],
+                item['store_code'],
+                item['is_on_sale'],
+                item['price_real_symbol'],
+                item['price_real'],
+                item['price_us_symbol'],
+                item['price_us'],
+                item['discountPrice_real_symbol'],
+                item['discountPrice_price_real'],
+                item['discountPrice_price_us_symbol'],
+                item['discountPrice_us'],
+                item['datetime_collected'],
             ),
         )
         self.conn.commit()

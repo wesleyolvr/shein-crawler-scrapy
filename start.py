@@ -15,7 +15,7 @@ def start_consumers(num_consumers):
         process = multiprocessing.Process(target=start_consumer)
         process.start()
         processes.append(process)
-    
+
     # Aguardar todos os processos terminarem
     for process in processes:
         process.join()
@@ -30,9 +30,9 @@ def start_api():
 if __name__ == '__main__':
     # Definir o número de consumidores
     num_consumers = 4  # Por exemplo, iniciar 3 consumidores
-    
+
     # Iniciar os consumidores em processos separados
     start_consumers(num_consumers)
-    
+
     # Iniciar a API FastAPI
     start_api()

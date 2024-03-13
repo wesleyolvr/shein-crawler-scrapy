@@ -24,5 +24,5 @@ class Product(Base):
     discountPrice_price_us_symbol = Column(String)
     discountPrice_us = Column(Float)
     datetime_collected = Column(String)
-    
+
     price_history = relationship('PriceHistory', back_populates='product')

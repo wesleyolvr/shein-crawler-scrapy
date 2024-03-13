@@ -7,14 +7,14 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-BOT_NAME = "shein"
+BOT_NAME = 'shein'
 
-SPIDER_MODULES = ["shein.spiders"]
-NEWSPIDER_MODULE = "shein.spiders"
+SPIDER_MODULES = ['shein.spiders']
+NEWSPIDER_MODULE = 'shein.spiders'
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-USER_AGENT = "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Mobile Safari/537.36"
+USER_AGENT = 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Mobile Safari/537.36'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
@@ -31,17 +31,17 @@ DOWNLOAD_DELAY = 3
 # CONCURRENT_REQUESTS_PER_DOMAIN = 16
 # CONCURRENT_REQUESTS_PER_IP = 16
 
-PROXY_IP = "177.38.5.132"
+PROXY_IP = '177.38.5.132'
 PROXY_PORT = 4145
-handle_httpstatus_list = [301, 302, 404,403]
+handle_httpstatus_list = [301, 302, 404, 403]
 # Adicione essa configuração para usar o KafkaPipeline
-KAFKA_SERVERS = "localhost:9092"
-KAFKA_TOPIC_IN = "produtos"
-KAFKA_TOPIC_OUT = "produtos"
+KAFKA_SERVERS = 'localhost:9092'
+KAFKA_TOPIC_IN = 'produtos'
+KAFKA_TOPIC_OUT = 'produtos'
 # settings.py
 
-KAFKA_SERVERS = "localhost:9092"
-KAFKA_TOPIC = "produtos"
+KAFKA_SERVERS = 'localhost:9092'
+KAFKA_TOPIC = 'produtos'
 
 
 # # Configuração do proxy
@@ -63,12 +63,12 @@ RETRY_ENABLED = True
 RETRY_TIMES = 5
 RETRY_DELAY = 7
 
-RETRY_HTTP_CODES = [404,403]
+RETRY_HTTP_CODES = [404, 403]
 
 DOWNLOADER_MIDDLEWARES = {
-    "scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware": 400,
-    "rotating_proxies.middlewares.RotatingProxyMiddleware": 610,
-    "rotating_proxies.middlewares.BanDetectionMiddleware": 620,
+    'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 400,
+    'rotating_proxies.middlewares.RotatingProxyMiddleware': 610,
+    'rotating_proxies.middlewares.BanDetectionMiddleware': 620,
 }
 
 
@@ -106,7 +106,7 @@ DOWNLOADER_MIDDLEWARES = {
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     # 'shein.pipelines.SQLitePipeline': 100,
-    "shein.pipelines.KafkaPipeline": 300,
+    'shein.pipelines.KafkaPipeline': 300,
 }
 
 
@@ -132,6 +132,6 @@ ITEM_PIPELINES = {
 # HTTPCACHE_STORAGE = "scrapy.extensions.httpcache.FilesystemCacheStorage"
 
 # Set settings whose default value is deprecated to a future-proof value
-REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
-TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
-FEED_EXPORT_ENCODING = "utf-8"
+REQUEST_FINGERPRINTER_IMPLEMENTATION = '2.7'
+TWISTED_REACTOR = 'twisted.internet.asyncioreactor.AsyncioSelectorReactor'
+FEED_EXPORT_ENCODING = 'utf-8'

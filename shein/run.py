@@ -1,11 +1,12 @@
-import json
+import logging
+import multiprocessing
+
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
-from shein.kafka.consumer import KafkaConsumer
+
 from config import KAFKA_TOPIC_IN
+from shein.kafka.consumer import KafkaConsumer
 from shein.spiders.shein_products import SheinProductsSpider
-import multiprocessing
-import logging
 
 
 def run_spider_for_url(url):
@@ -18,20 +19,22 @@ def run_spider_for_url(url):
     process.start()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
 
     kafka_consumer = KafkaConsumer(topic=KAFKA_TOPIC_IN)
     while True:
-        try:    
+        try:
             for mensagem in kafka_consumer.consume():
-                url = mensagem.get("category_url")
+                url = mensagem.get('category_url')
                 urls = [url]
 
                 # Crie um processo separado para cada URL e inicie o processo de rastreamento
                 processes = []
                 for url in urls:
-                    process = multiprocessing.Process(target=run_spider_for_url, args=(url,))
+                    process = multiprocessing.Process(
+                        target=run_spider_for_url, args=(url,)
+                    )
                     processes.append(process)
                     process.start()
 
@@ -40,9 +43,9 @@ if __name__ == "__main__":
                     for process in processes:
                         process.join()
                 except OSError as e:
-                    logging.error(f"Erro ao iniciar o processo: {e}")
-        
+                    logging.error(f'Erro ao iniciar o processo: {e}')
+
         except Exception as e:
             kafka_consumer.close()
-            logging.error(f"Erro ao consumir a mensagem: {e}")
+            logging.error(f'Erro ao consumir a mensagem: {e}')
             break

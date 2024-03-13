@@ -1,11 +1,14 @@
 import multiprocessing
+
 from config import KAFKA_TOPIC_IN
+
 
 def start_consumer():
     from api.database.manager import ProdutoProcessor
 
     processor_produtos = ProdutoProcessor(kafka_topic=KAFKA_TOPIC_IN)
     processor_produtos.processar_produto()
+
 
 def start_consumers(num_consumers):
     # Iniciar vários consumidores em processos separados

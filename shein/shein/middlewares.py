@@ -1,16 +1,5 @@
-# Define here the models for your spider middleware
-#
-# See documentation in:
-# https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-import redis
 from scrapy import signals
-import base64
 from scrapy.exceptions import NotConfigured
-
-# useful for handling different item types with a single interface
-from itemadapter import is_item, ItemAdapter
-
-from scrapy.http import Request
 
 # class RedisCacheMiddleware:
 #     def __init__(self, redis_url, expire_time):
@@ -91,7 +80,7 @@ class SheinSpiderMiddleware:
             yield r
 
     def spider_opened(self, spider):
-        spider.logger.info("Spider opened: %s" % spider.name)
+        spider.logger.info('Spider opened: %s' % spider.name)
 
 
 class SheinDownloaderMiddleware:
@@ -138,7 +127,7 @@ class SheinDownloaderMiddleware:
         pass
 
     def spider_opened(self, spider):
-        spider.logger.info("Spider opened: %s" % spider.name)
+        spider.logger.info('Spider opened: %s' % spider.name)
 
 
 class ProxyMiddleware:
@@ -147,16 +136,17 @@ class ProxyMiddleware:
 
     @classmethod
     def from_crawler(cls, crawler):
-        if not crawler.settings.getbool("PROXY_ENABLED"):
+        if not crawler.settings.getbool('PROXY_ENABLED'):
             raise NotConfigured
         proxy_settings = {
-            "endpoint": crawler.settings.get("PROXY_IP"),
-            "port": crawler.settings.get("PROXY_PORT"),
+            'endpoint': crawler.settings.get('PROXY_IP'),
+            'port': crawler.settings.get('PROXY_PORT'),
         }
         return cls(proxy_settings)
 
     def process_request(self, request, spider):
-        host = "http://{endpoint}:{port}".format(
-            endpoint=self.proxy_settings["endpoint"], port=self.proxy_settings["port"]
+        host = 'http://{endpoint}:{port}'.format(
+            endpoint=self.proxy_settings['endpoint'],
+            port=self.proxy_settings['port'],
         )
-        request.meta["proxy"] = host
+        request.meta['proxy'] = host

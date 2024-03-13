@@ -1,10 +1,10 @@
 from logging.config import fileConfig
 
+from shein_crawler.config import DATABASE_URL
+from shein_crawler.db.db_manager import metadata
 from sqlalchemy import engine_from_config, pool
 
 from alembic import context
-from shein_crawler.config import DATABASE_URL
-from shein_crawler.db.db_manager import metadata
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

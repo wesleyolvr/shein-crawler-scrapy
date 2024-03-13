@@ -9,7 +9,8 @@ app = FastAPI()
 
 @app.post('/products/', response_model=ProductRead)
 def create_product(
-    product: ProductCreate, db: DatabaseManager = Depends(get_db)):
+    product: ProductCreate, db: DatabaseManager = Depends(get_db)
+):
     db.create_product(product)
     return product
 

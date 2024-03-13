@@ -1,19 +1,25 @@
-from config import KAFKA_SERVERS
-from confluent_kafka import Consumer
-import logging
 import json
+import logging
+
+from confluent_kafka import Consumer
+
+from config import KAFKA_SERVERS
+
 
 class KafkaConsumer:
-    def __init__(self, topic,servers=KAFKA_SERVERS,
-                 group_id='my_consumer_group'):
-        self.consumer = Consumer({
-            'bootstrap.servers': servers,
-            'group.id': group_id,
-            'auto.offset.reset': 'earliest',
-        })
+    def __init__(
+        self, topic, servers=KAFKA_SERVERS, group_id='my_consumer_group'
+    ):
+        self.consumer = Consumer(
+            {
+                'bootstrap.servers': servers,
+                'group.id': group_id,
+                'auto.offset.reset': 'earliest',
+            }
+        )
         self.topic = topic
         self.consumer.subscribe([self.topic])
-        
+
     def consume(self):
         while True:
             msg = self.consumer.poll(5.0)
@@ -27,6 +33,6 @@ class KafkaConsumer:
             logging.info(f'Mensagem recebida: {msg_text}')
             msg_json = json.loads(msg_text)
             return [msg_json]
-        
+
     def close(self):
         self.consumer.close()

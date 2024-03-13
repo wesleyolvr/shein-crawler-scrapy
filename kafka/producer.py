@@ -1,5 +1,7 @@
-from confluent_kafka import Producer
 import json
+
+from confluent_kafka import Producer
+
 from logs.logger import logger
 
 

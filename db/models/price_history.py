@@ -18,11 +18,11 @@ class PriceHistory(Base):
     discountPrice_price_real = Column(Float)
     discountPrice_price_us_symbol = Column(String)
     discountPrice_us = Column(Float)
-    
-    
 
     # Chave estrangeira para o produto
-    product_id = Column(Integer, ForeignKey('products.id'))  # A chave estrangeira deve referenciar a coluna 'id' de 'products'
+    product_id = Column(
+        Integer, ForeignKey('products.id')
+    )  # A chave estrangeira deve referenciar a coluna 'id' de 'products'
 
     # Relacionamento com o produto
     product = relationship('Product', back_populates='price_history')

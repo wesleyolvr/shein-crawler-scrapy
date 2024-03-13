@@ -7,10 +7,12 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+*.db
+
+*launch.json
+
 # C extensions
 *.so
-
-/.vscode/*
 
 # Distribution / packaging
 .Python

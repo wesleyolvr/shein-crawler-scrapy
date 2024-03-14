@@ -49,13 +49,18 @@ Para executar este projeto em sua máquina local, siga os passos abaixo:
 4. **Inicie o Kafka e o Zookeeper**:
    Siga as instruções para iniciar o Apache Kafka e o Apache Zookeeper conforme documentado [aqui](https://github.com/wesleyolvr/shein_crawler/blob/feature/crawler_api_kafka/kafka-zookeeper.md).
 
-5. **Inicie a API FastAPI e o consumidor Kafka**:
+
+5. **Inicie Consumidor Kafka**:
    ```sh
-   python start.py
+   python start_consumidor.py
    ```
-6. **Inicie o script do Crawler:**
+6. **Inicie a API FastAPI**:
    ```sh
-   python crawler/shein_crawler.py
+   uvicorn api.main:app --reload
+   ```
+7. **Inicie o script do Spider:**
+   ```sh
+   python shein/run_spider.py
    ```
 
 ## Uso
@@ -91,8 +96,10 @@ Se você deseja contribuir com melhorias para este projeto, siga as diretrizes a
 
 ## Próximos Passos
 
-- **Análise de Dados:** Implementar funcionalidades para consumir os dados do banco e realizar análises de tendências de preços. 📉📊
 - **Serviço de Comparação de Preços:** Desenvolver um serviço que compara os preços atuais dos produtos com seus históricos para identificar oportunidades de compra. 💰🔍
+
+- **Dockerização do Projeto:** Utilizar Docker para empacotar e distribuir todo o projeto, garantindo portabilidade, consistência e facilitando a escalabilidade. Isso simplificará a gestão de dependências e garantirá uma implantação mais eficiente. 🐳🚀
+
 
 
 ## Licença

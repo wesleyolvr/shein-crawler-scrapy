@@ -41,7 +41,7 @@ class SheinProductsSpider(scrapy.Spider):
         'ITEM_PIPELINES': {
             'shein.pipelines.KafkaPipeline': 100,  # Prioridade 100
         },
-        'KAFKA_SERVERS': 'localhost:9092',  # Defina o endereço do servidor Kafka
+        'KAFKA_SERVERS': 'localhost:9093',  # Defina o endereço do servidor Kafka
         'KAFKA_TOPIC': 'produtos_shein',
         'RETRY': True,
         'RETRY_ENABLED': True,

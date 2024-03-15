@@ -9,7 +9,7 @@ class KafkaProducer:
     def __init__(self):
         self.producer = Producer(
             {
-                'bootstrap.servers': 'localhost:9092',
+                'bootstrap.servers': 'localhost:9093',
                 'client.id': 'python-producer',
             }
         )

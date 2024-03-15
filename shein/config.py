@@ -12,4 +12,4 @@ REDIS_EXPIRE_TIME = int(
 )  # 4 dias em segundos
 KAFKA_TOPIC_IN = os.getenv('KAFKA_TOPIC_IN', 'produtos_shein')
 KAFKA_TOPIC_OUT = os.getenv('KAFKA_TOPIC_OUT', 'produtos')
-KAFKA_SERVERS = os.getenv('KAFKA_SERVERS', 'localhost:9092')
+KAFKA_SERVERS = os.getenv('KAFKA_SERVERS', 'localhost:9093')

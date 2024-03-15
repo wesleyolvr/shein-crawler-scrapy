@@ -43,11 +43,16 @@ Para executar este projeto em sua máquina local, siga os passos abaixo:
        source venv/bin/activate
      ```
 
-3. **Ajuste o arquivo de configuração**:
-   Renomeie o arquivo `config_sample.ini` para `config.ini` e insira as informações do banco de dados e do Kafka conforme necessário.
+3. **Ajuste os arquivos de variaveis de ambiente**:
+   Renomeie o arquivo `config_sample.ini` para `config.ini` e insira as informações do banco de dados, Redis e do Kafka conforme necessário.
 
-4. **Inicie o Kafka e o Zookeeper**:
-   Siga as instruções para iniciar o Apache Kafka e o Apache Zookeeper conforme documentado [aqui](https://github.com/wesleyolvr/shein_crawler/blob/feature/crawler_api_kafka/kafka-zookeeper.md).
+
+
+4. **Inicie o docker com Kafka, Zookeeper e Redis**:
+   ```sh
+   docker-compose up -d
+   ```
+
 
 
 5. **Inicie Consumidor Kafka**:

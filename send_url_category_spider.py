@@ -4,7 +4,7 @@ import logging
 import requests
 from confluent_kafka import Producer
 
-from config import KAFKA_SERVERS, KAFKA_TOPIC_OUT
+from config import KAFKA_SERVERS,KAFKA_TOPIC_url
 
 
 class SheinCategoryProducer:
@@ -71,4 +71,4 @@ if __name__ == '__main__':
 
     category_producer = SheinCategoryProducer(KAFKA_SERVERS)
     categories = category_producer.get_categories()
-    category_producer.produce_to_kafka(KAFKA_TOPIC_OUT, categories)
+    category_producer.produce_to_kafka(KAFKA_TOPIC_url, categories)

@@ -4,13 +4,15 @@ from api.schemas.price_history import PriceHistoryUpdate
 from api.schemas.product import ProductCreate
 from cache.redis_cache import RedisCache
 from db.database import DATABASE_URL
+from sqlalchemy.orm import Session
+from db.database import get_db
 from db.manager import DatabaseManager
 from kafka.consumer import KafkaConsumer
 
 
 class ProdutoProcessor:
     def __init__(self, kafka_topic):
-        self.kafka_consumer = KafkaConsumer(kafka_topic)
+        self.kafka_consumer = KafkaConsumer(topic=kafka_topic)
         self.db_manager = DatabaseManager(database_url=DATABASE_URL)
         self.cache = RedisCache()
 
@@ -18,6 +20,9 @@ class ProdutoProcessor:
         try:
             for mensagem in self.kafka_consumer.consume():
                 produto = json.loads(mensagem)
+                if produto.get('id') is None:
+                    print('passando')
+                    continue
                 key = produto['id']
                 # checa se o produto esta no cache e se o valor de price_real é diferente do que esta no cache, se for diferente ou se não existir, armazena no cache
                 if (
@@ -38,11 +43,11 @@ class ProdutoProcessor:
                         > 1
                     ):
                         print(
-                            f"O preço do produto {produto['id']} foi alterado de {produto_bd.price_real} para {produto['price_real']}"
+                            f"O preço do produto {produto['product_id']} foi alterado de {produto_bd.price_real} para {produto['price_real']}"
                         )
                         produto_bd.price_real = produto['price_real']
                         update_data = PriceHistoryUpdate(
-                            product_id=produto_bd.id,  # Substitua 'product_id' pelo nome correto do campo
+                            product_id=produto_bd['product_id'],  # Substitua 'product_id' pelo nome correto do campo
                             new_price=produto['price_real'],
                             date=produto['datetime_collected'],
                             price=produto['price_real'],
@@ -50,24 +55,23 @@ class ProdutoProcessor:
                             price_real=produto['price_real'],
                             price_us_symbol=produto['price_us_symbol'],
                             price_us=produto['price_us'],
-                            discountPrice_price_real=produto[
-                                'discountPrice_price_real'
+                            discount_price_real=produto[
+                                'discount_price_real'
                             ],
-                            discountPrice_us=produto['discountPrice_us'],
-                            discountPrice_real_symbol=produto[
-                                'discountPrice_real_symbol'
+                            discount_price_us=produto['discount_price_us'],
+                            discount_price_real_symbol=produto[
+                                'discount_price_real_symbol'
                             ],
-                            discountPrice_price_us_symbol=produto[
-                                'discountPrice_price_us_symbol'
+                            discount_price_us_symbol=produto[
+                                'discount_price_us_symbol'
                             ],
                         )
                         self.db_manager.update_product_price(update_data)
                         mensagem = json.dumps(produto)
                         self.cache.set_cache('cached_data', mensagem)
                 else:
-                    # Criar um novo produto
-                    produto_create = ProductCreate(**produto)
-                    self.db_manager.create_product(produto_create)
+
+                    self.db_manager.create_product(**produto)
                     print(f"O produto {produto['id']} foi adicionado")
                     mensagem = json.dumps(produto)
                     self.cache.set_cache(f"product_{produto['id']}", mensagem)

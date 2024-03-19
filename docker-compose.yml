@@ -30,7 +30,7 @@ services:
       - "9093"
     environment:
       - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-      - KAFKA_CREATE_TOPICS="product_info:5:2,url_to_spider:2:1"
+      - KAFKA_CREATE_TOPICS="products:2:1,url_to_spider:2:1"
       - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
       - KAFKA_CFG_LISTENERS=CLIENT://:9092,EXTERNAL://:9093
@@ -47,3 +47,31 @@ services:
     container_name: redis-stack-server
     ports:
       - "6379:6379"
+
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_USER: "wesley"
+      POSTGRES_PASSWORD: "wesley"
+    ports:
+      - "15432:5432"
+    volumes:
+      - ./db_create_tables.sql:/docker-entrypoint-initdb.d/db_create_tables.sql
+    networks:
+      - postgres-compose-network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "wesleyumsocaminho@gmail.com"
+      PGADMIN_DEFAULT_PASSWORD: "root"
+    ports:
+      - "16543:80"
+    depends_on:
+      - postgres
+    networks:
+      - postgres-compose-network
+
+networks: 
+  postgres-compose-network:
+    driver: bridge

@@ -8,10 +8,10 @@ class PriceHistoryBase(BaseModel):
     price_real: float
     price_us_symbol: str
     price_us: float
-    discountPrice_real_symbol: str
-    discountPrice_price_real: float
-    discountPrice_price_us_symbol: str
-    discountPrice_us: float
+    discount_price_real_symbol: str
+    discount_price_real: float
+    discount_price_us_symbol: str
+    discount_price_us: float
 
 
 class PriceHistoryCreate(PriceHistoryBase):
@@ -19,7 +19,7 @@ class PriceHistoryCreate(PriceHistoryBase):
 
 
 class PriceHistoryRead(PriceHistoryBase):
-    id: int
+    product_id: int
 
     class Config:
         orm_mode = True
@@ -32,7 +32,7 @@ class PriceHistoryUpdate(PriceHistoryBase):
     price_real: float
     price_us_symbol: str
     price_us: float
-    discountPrice_real_symbol: str
-    discountPrice_price_real: float
-    discountPrice_price_us_symbol: str
-    discountPrice_us: float
+    discountprice_real_symbol: str
+    discountprice_price_real: float
+    discountprice_us_symbol: str
+    discountprice_us: float

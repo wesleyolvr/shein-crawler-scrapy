@@ -1,8 +1,8 @@
 # Crawler Shein
 
-# Bem-vindo ao projeto de web scraping automatizado do site Shein!
+# Bem-vindo ao projeto de Web Scraping automatizado do site Shein!
 
-Este projeto foi desenvolvido para automatizar a extração de dados de produtos do site Shein, utilizando o framework Scrapy. Os dados são recebidos via Apache Kafka, onde o Scrapy extrai todos os produtos de uma categoria específica, verificando se a extração daquela categoria foi feita recentemente no cache Redis. Em seguida, cada produto é retornado como JSON para a API também via Kafka.
+O projeto automatiza a obtenção de informações sobre produtos do site Shein.
 
 ## Funcionalidades
 
@@ -47,15 +47,12 @@ Para executar este projeto em sua máquina local, siga os passos abaixo:
    Renomeie o arquivo `config_sample.ini` para `config.ini` e insira as informações do banco de dados, Redis e do Kafka conforme necessário.
 
 
-
-4. **Inicie o docker com Kafka, Zookeeper e Redis**:
+4. **Cria e inicie os serviços Kafka, Zookeeper e Redis**:
    ```sh
    docker-compose up -d
    ```
 
-
-
-5. **Inicie Consumidor Kafka**:
+5. **Inicie script consumidor dos produtos**:
    ```sh
    python start_consumidor.py
    ```

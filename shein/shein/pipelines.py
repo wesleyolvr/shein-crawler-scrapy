@@ -1,6 +1,8 @@
 import json
 import sqlite3
 
+from config import KAFKA_SERVERS, KAFKA_TOPIC_products
+
 from confluent_kafka import Producer
 from scrapy import signals
 from scrapy.exceptions import DropItem
@@ -18,11 +20,9 @@ class KafkaPipeline:
 
     @classmethod
     def from_crawler(cls, crawler):
-        kafka_servers = crawler.settings.get('KAFKA_SERVERS')
-        kafka_topic = crawler.settings.get('KAFKA_TOPIC')
-        if not kafka_servers or not kafka_topic:
+        if not KAFKA_SERVERS or not KAFKA_TOPIC_products:
             raise ValueError('KAFKA_SERVERS or KAFKA_TOPIC is not set')
-        pipeline = cls(kafka_servers, kafka_topic)
+        pipeline = cls(KAFKA_SERVERS, KAFKA_TOPIC_products)
         crawler.signals.connect(
             pipeline.spider_closed, signal=signals.spider_closed
         )
@@ -32,7 +32,7 @@ class KafkaPipeline:
         item_dict = dict(item)
         message = json.dumps(item_dict).encode('utf-8')
         try:
-            self.producer.produce('produtos', message)
+            self.producer.produce(KAFKA_TOPIC_products, message)
             self.producer.flush()
         except Exception as e:
             raise DropItem(f'Failed to send item to Kafka: {str(e)}')
@@ -40,13 +40,6 @@ class KafkaPipeline:
 
     def spider_closed(self, spider, reason):
         pass
-
-    def send_item_to_kafka(self, item):
-        # Envia o item para o tópico "produtos"
-        message = json.dumps(item).encode('utf-8')
-        self.producer.produce('produtos', message)
-        self.producer.flush()
-
 
 class SQLitePipeline:
     def open_spider(self, spider):
@@ -75,10 +68,10 @@ class SQLitePipeline:
                 price_real REAL,
                 price_us_symbol TEXT,
                 price_us REAL,
-                discountPrice_real_symbol TEXT,
-                discountPrice_price_real REAL,
-                discountPrice_price_us_symbol TEXT,
-                discountPrice_us REAL,
+                discount_price_real_symbol TEXT,
+                discount_price_real REAL,
+                discount_price_us_symbol TEXT,
+                discount_price_us REAL,
                 datetime_collected TEXT
             )
         """
@@ -103,8 +96,8 @@ class SQLitePipeline:
             """
             INSERT INTO products (id, name, sn, url, imgs, category, store_code, is_on_sale, 
                                   price_real_symbol, price_real, price_us_symbol, price_us, 
-                                  discountPrice_real_symbol, discountPrice_price_real, 
-                                  discountPrice_price_us_symbol, discountPrice_us, datetime_collected)
+                                  discount_price_real_symbol, discount_price_real, 
+                                  discount_price_us_symbol, discount_price_us, datetime_collected)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
             (
@@ -120,10 +113,10 @@ class SQLitePipeline:
                 item['price_real'],
                 item['price_us_symbol'],
                 item['price_us'],
-                item['discountPrice_real_symbol'],
-                item['discountPrice_price_real'],
-                item['discountPrice_price_us_symbol'],
-                item['discountPrice_us'],
+                item['discount_price_real_symbol'],
+                item['discount_price_real'],
+                item['discount_price_us_symbol'],
+                item['discount_price_us'],
                 item['datetime_collected'],
             ),
         )

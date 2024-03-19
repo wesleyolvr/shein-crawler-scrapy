@@ -35,13 +35,10 @@ PROXY_IP = '177.38.5.132'
 PROXY_PORT = 4145
 handle_httpstatus_list = [301, 302, 404, 403]
 # Adicione essa configuração para usar o KafkaPipeline
-KAFKA_SERVERS = 'localhost:9092'
-KAFKA_TOPIC_IN = 'produtos'
-KAFKA_TOPIC_OUT = 'produtos'
 # settings.py
 
-KAFKA_SERVERS = 'localhost:9092'
-KAFKA_TOPIC = 'produtos'
+KAFKA_SERVERS = 'localhost:9093'
+KAFKA_TOPIC_products = 'products'
 
 
 # # Configuração do proxy

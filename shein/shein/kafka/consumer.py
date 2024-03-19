@@ -8,12 +8,11 @@ from config import KAFKA_SERVERS
 
 class KafkaConsumer:
     def __init__(
-        self, topic, servers=KAFKA_SERVERS, group_id='my_consumer_group'
-    ):
+        self, topic, servers=KAFKA_SERVERS):
         self.consumer = Consumer(
             {
                 'bootstrap.servers': servers,
-                'group.id': group_id,
+                'group.id': 'my_consumer_group',
                 'auto.offset.reset': 'earliest',
             }
         )

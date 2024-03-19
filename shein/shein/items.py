@@ -7,7 +7,7 @@ from scrapy.item import Field, Item
 
 
 class ProductItem(Item):
-    id = Field()
+    product_id = Field()
     name = Field()
     sn = Field()
     url = Field()
@@ -19,8 +19,8 @@ class ProductItem(Item):
     price_real = Field()
     price_us_symbol = Field()
     price_us = Field()
-    discountPrice_real_symbol = Field()
-    discountPrice_price_real = Field()
-    discountPrice_price_us_symbol = Field()
-    discountPrice_us = Field()
+    discount_price_real_symbol = Field()
+    discount_price_real = Field()
+    discount_price_us_symbol = Field()
+    discount_price_us = Field()
     datetime_collected = Field()

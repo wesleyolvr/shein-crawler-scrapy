@@ -41,11 +41,9 @@ class SheinProductsSpider(scrapy.Spider):
         'ITEM_PIPELINES': {
             'shein.pipelines.KafkaPipeline': 100,  # Prioridade 100
         },
-        'KAFKA_SERVERS': 'localhost:9093',  # Defina o endereço do servidor Kafka
-        'KAFKA_TOPIC': 'produtos_shein',
         'RETRY': True,
         'RETRY_ENABLED': True,
-        'RETRY_TIMES': 5,
+        'RETRY_TIMES': 7,
         'RETRY_DELAY': 7,
         'RETRY_HTTP_CODES': [404, 403],
     }
@@ -91,35 +89,42 @@ class SheinProductsSpider(scrapy.Spider):
         products = response.json()['goods']
         if products:
             for product in products:
-                item = ProductItem(
-                    id=product['goods_id'],
-                    name=product['goods_name'],
-                    sn=product['goods_sn'],
-                    url=f"{self.url_base}/pdsearch/{product['goods_sn']}/",
-                    imgs=product['detail_image'],
-                    category=product['goods_url_name'],
-                    store_code=product['store_code'],
-                    is_on_sale=product['is_on_sale'],
-                    price_real_symbol=product['retailPrice'][
-                        'amountWithSymbol'
-                    ],
-                    price_real=product['retailPrice']['amount'],
-                    price_us_symbol=product['retailPrice'][
-                        'usdAmountWithSymbol'
-                    ],
-                    price_us=product['retailPrice']['usdAmount'],
-                    discountPrice_real_symbol=product['salePrice'][
-                        'amountWithSymbol'
-                    ],
-                    discountPrice_price_real=product['salePrice']['amount'],
-                    discountPrice_price_us_symbol=product['salePrice'][
-                        'usdAmountWithSymbol'
-                    ],
-                    discountPrice_us=product['salePrice']['usdAmount'],
-                    datetime_collected=datetime.now().strftime(
-                        '%Y-%m-%d %H:%M:%S'
-                    ),
-                )
+                try:
+                    if not product.get('retailPrice'):
+                        continue
+                    item = ProductItem(
+                        product_id=product['goods_id'],
+                        name=product['goods_name'],
+                        sn=product['goods_sn'],
+                        url=f"{self.url_base}/pdsearch/{product['goods_sn']}/",
+                        imgs=','.join(product['detail_image']),
+                        category=product['goods_url_name'],
+                        store_code=product['store_code'],
+                        is_on_sale=product['is_on_sale'],
+                        price_real_symbol=product['retailPrice'][
+                            'amountWithSymbol'
+                        ],
+                        price_real=product['retailPrice']['amount'],
+                        price_us_symbol=product['retailPrice'][
+                            'usdAmountWithSymbol'
+                        ],
+                        price_us=product['retailPrice']['usdAmount'],
+                        discount_price_real_symbol=product['salePrice'][
+                            'amountWithSymbol'
+                        ],
+                        discount_price_real=product['salePrice']['amount'],
+                        discount_price_us_symbol=product['salePrice'][
+                            'usdAmountWithSymbol'
+                        ],
+                        discount_price_us=product['salePrice']['usdAmount'],
+                        datetime_collected=datetime.now().strftime(
+                            '%Y-%m-%d %H:%M:%S'
+                        ),
+                    )
+                except Exception as e:
+                    self.logger.error(
+                        f'Erro ao processar o item: {str(e)}'
+                    )
                 yield item
             self.redis_cache.set_cache(self.categorys[0], '1')
         else:

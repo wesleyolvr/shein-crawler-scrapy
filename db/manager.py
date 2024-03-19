@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine, func, inspect
-from sqlalchemy.orm import configure_mappers, sessionmaker
+from sqlalchemy.orm import sessionmaker, Session
 
 from api.schemas.price_history import PriceHistoryUpdate
 from api.schemas.product import ProductCreate, ProductRead
@@ -14,28 +14,37 @@ class DatabaseManager:
         self.database_url = database_url
         self.engine = create_engine(self.database_url)
 
-        configure_mappers()
+        Session = sessionmaker(bind=self.engine)
+        self.session = Session()
 
-        self.Session = sessionmaker(bind=self.engine)
-        self.session = self.Session()
-
-        insp = inspect(self.engine)
-        if not insp.has_table('products'):
-            # Criar a tabela 'products' se ela não existir
-            Base.metadata.create_all(self.engine)
+        # Se desejar, você pode adicionar lógica para criar tabelas
+        # específicas do PostgreSQL aqui
 
     def create_product(self, product_data: ProductCreate):
-        try:
-            """
-            Cria um novo produto no banco de dados.
-            """
-            new_product = Product(**product_data.dict())
-
-            self.session.add(new_product)
-            self.session.commit()
-            logger.info(f'New product {new_product.name}')
-        except Exception as e:
-            logger.error(f'Error creating product: {e}')
+        """
+        Cria um novo registro de produto no banco de dados.
+        """
+        new_product = Product(
+            product_id=product_data.product_id,
+            name=product_data.name,
+            sn=product_data.sn,
+            url=product_data.url,
+            imgs=product_data.imgs,
+            category=product_data.category,
+            store_code=product_data.store_code,
+            is_on_sale=product_data.is_on_sale,
+            price_real_symbol=product_data.price_real_symbol,
+            price_real=product_data.price_real,
+            price_us_symbol=product_data.price_us_symbol,
+            price_us=product_data.price_us,
+            discount_price_real_symbol=product_data.discount_price_real_symbol,
+            discount_price_real=product_data.discount_price_real,
+            discount_price_us_symbol=product_data.discount_price_us_symbol,
+            discount_price_us=product_data.discount_price_us,
+            datetime_collected=product_data.datetime_collected
+        )
+        self.session.add(new_product)
+        self.session.commit()
 
     def update_product(self, product_data: ProductCreate):
         """
@@ -53,17 +62,17 @@ class DatabaseManager:
                     product_data.price_real_symbol
                 )
                 existing_product.price_us_symbol = product_data.price_us_symbol
-                existing_product.discountPrice_price_real = (
-                    product_data.discountPrice_price_real
+                existing_product.discount_price_real = (
+                    product_data.discount_price_real
                 )
-                existing_product.discountPrice_us = (
-                    product_data.discountPrice_us
+                existing_product.discount_price_us = (
+                    product_data.discount_price_us
                 )
-                existing_product.discountPrice_real_symbol = (
-                    product_data.discountPrice_real_symbol
+                existing_product.discount_price_real_symbol = (
+                    product_data.discount_price_real_symbol
                 )
-                existing_product.discountPrice_us_symbol = (
-                    product_data.discountPrice_us_symbol
+                existing_product.discount_price_us_symbol = (
+                    product_data.discount_price_us_symbol
                 )
 
                 product_price = PriceHistoryUpdate(
@@ -73,10 +82,10 @@ class DatabaseManager:
                     price_real=product_data.price_real,
                     price_us_symbol=product_data.price_us_symbol,
                     price_us=product_data.price_us,
-                    discountPrice_price_real=product_data.discountPrice_price_real,
-                    discountPrice_us=product_data.discountPrice_us,
-                    discountPrice_real_symbol=product_data.discountPrice_real_symbol,
-                    discountPrice_us_symbol=product_data.discountPrice_us_symbol,
+                    discount_price_real=product_data.discount_price_real,
+                    discount_price_us=product_data.discount_price_us,
+                    discount_price_real_symbol=product_data.discount_price_real_symbol,
+                    discount_price_us_symbol=product_data.discount_price_us_symbol,
                 )
 
                 self.add_price_history(product_price)
@@ -96,15 +105,15 @@ class DatabaseManager:
             product.price_real_symbol = product_price.price_real_symbol
             product.price_us = product_price.price_us
             product.price_us_symbol = product_price.price_us_symbol
-            product.discountPrice_price_real = (
-                product_price.discountPrice_price_real
+            product.discount_price_real = (
+                product_price.discount_price_real
             )
-            product.discountPrice_real_symbol = (
-                product_price.discountPrice_real_symbol
+            product.discount_price_real_symbol = (
+                product_price.discount_price_real_symbol
             )
-            product.discountPrice_us = product_price.discountPrice_us
-            product.discountPrice_price_us_symbol = (
-                product_price.discountPrice_price_us_symbol
+            product.discount_price_us = product_price.discount_price_us
+            product.discount_price_us_symbol = (
+                product_price.discount_price_us_symbol
             )
 
             self.session.commit()
@@ -113,7 +122,7 @@ class DatabaseManager:
         """
         Retorna um produto do banco de dados com base no ID.
         """
-        return self.session.query(Product).filter_by(id=product_id).first()
+        return self.session.query(Product).filter_by(product_id=product_id).first()
 
     def get_product_by_title(self, product_read: ProductRead):
         """
@@ -148,10 +157,10 @@ class DatabaseManager:
                 price_real=product_price.price_real,
                 price_us_symbol=product_price.price_us_symbol,
                 price_us=product_price.price_us,
-                discountPrice_price_real=product_price.discountPrice_price_real,
-                discountPrice_us=product_price.discountPrice_us,
-                discountPrice_real_symbol=product_price.discountPrice_real_symbol,
-                discountPrice_us_symbol=product_price.discountPrice_us_symbol,
+                discount_price_real=product_price.discount_price_real,
+                discount_price_real_symbol=product_price.discount_price_real_symbol,
+                discount_price_us_symbol=product_price.discount_price_us_symbol,
+                discount_price_us=product_price.discount_price_us,
             )
             logger.info(
                 f'New price history for product {product.data_title} : new price : {product_price.new_price}'

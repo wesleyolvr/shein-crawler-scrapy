@@ -47,7 +47,7 @@ Para executar este projeto em sua máquina local, siga os passos abaixo:
    Renomeie o arquivo `config_sample.ini` para `config.ini` e insira as informações do banco de dados, Redis e do Kafka conforme necessário.
 
 
-4. **Cria e inicie os serviços Kafka, Zookeeper e Redis**:
+4. **Cria e inicie os serviços Kafka, Zookeeper, Redis, KafDrop, PgAdmin**:
    ```sh
    docker-compose up -d
    ```

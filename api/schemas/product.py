@@ -12,7 +12,7 @@ class ProductBase(BaseModel):
     imgs: str
     category: str
     store_code: int = None
-    is_on_sale: int
+    is_on_sale: bool
     price_real_symbol: str
     price_real: float
     price_us_symbol: str
@@ -25,33 +25,18 @@ class ProductBase(BaseModel):
 
 
 class ProductCreate(ProductBase):
-    @validator('is_on_sale')
-    # pylint: disable=no-self-argument
-    def convert_is_on_sale(cls, value):
-        """Converte para booleano."""
-        if value in [1, '1', True, 'True', 'true']:
-            return True
-        elif value in [0, '0', False, 'False', 'false','']:
-            return False
-        else:
-            raise ValueError("O campo is_on_sale deve ser um booleano ou representação válida.")
-
-    @validator('store_code')
-    # pylint: disable=no-self-argument
-    def convert_to_integer(cls, value):
-        """Converte para int."""
-        if value is None or value == '':
-            return 0
-        return int(value)
     
-    @validator('store_code')
+    @validator('name',pre=True)
     # pylint: disable=no-self-argument
-    def convert_imgs_string(cls, value):
-        """Converte para int."""
-        if value is None or value == '':
-            return ''
-        return ','.join(value)
+    def truncate_name(cls, v):
+        # Trunca o nome para o tamanho máximo permitido
+        return v[:350]
 
+    @validator('category',pre=True)
+    # pylint: disable=no-self-argument
+    def truncate_category(cls, v):
+        # Trunca a categoria para o tamanho máximo permitido
+        return v[:400]
 
 class ProductRead(ProductBase):
     datetime_collected: str

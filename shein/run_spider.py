@@ -4,7 +4,7 @@ import multiprocessing
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 
-from config import KAFKA_TOPIC_IN
+from config import KAFKA_TOPIC_url
 from shein.kafka.consumer import KafkaConsumer
 from shein.spiders.shein_products import SheinProductsSpider
 
@@ -22,7 +22,7 @@ def run_spider_for_url(url):
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
 
-    kafka_consumer = KafkaConsumer(topic=KAFKA_TOPIC_IN)
+    kafka_consumer = KafkaConsumer(topic=KAFKA_TOPIC_url)
     while True:
         try:
             for mensagem in kafka_consumer.consume():

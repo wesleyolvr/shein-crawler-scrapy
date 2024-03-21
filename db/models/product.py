@@ -4,10 +4,15 @@ from sqlalchemy.orm import relationship
 from db.manager import Base
 
 
+from sqlalchemy import Column, Integer, String, Float, TIMESTAMP
+from db.manager import Base
+
+
 class Product(Base):
     __tablename__ = 'products'
 
     id = Column(Integer, primary_key=True)
+    product_id = Column(Integer)
     name = Column(String)
     sn = Column(String)
     url = Column(String)
@@ -19,10 +24,10 @@ class Product(Base):
     price_real = Column(Float)
     price_us_symbol = Column(String)
     price_us = Column(Float)
-    discountPrice_real_symbol = Column(String)
-    discountPrice_price_real = Column(Float)
-    discountPrice_price_us_symbol = Column(String)
-    discountPrice_us = Column(Float)
-    datetime_collected = Column(String)
+    discount_price_real_symbol = Column(String)  
+    discount_price_real = Column(Float)    
+    discount_price_us_symbol = Column(String)    
+    discount_price_us = Column(Float)
+    datetime_collected = Column(TIMESTAMP)
 
     price_history = relationship('PriceHistory', back_populates='product')

@@ -1,17 +1,25 @@
-import configparser
+# No seu código Python
+import os
+from dotenv import load_dotenv
+
+load_dotenv()  # Carrega as variáveis de ambiente do arquivo .env
 
 
-def get_config():
-    config = configparser.ConfigParser()
-    config.read('config.ini')
-    return dict(config['database'])
+# Redis
+REDIS_URL = os.getenv('REDIS_URL', 'redis://localhost:6379')
+REDIS_EXPIRE_TIME = int(os.getenv('REDIS_EXPIRE_TIME', '3600'))
 
+# Kafka
+KAFKA_SERVERS = os.getenv('KAFKA_SERVERS', 'localhost:9093')
+KAFKA_TOPIC_url = os.getenv('KAFKA_TOPIC_url', 'url_to_spider')
+KAFKA_TOPIC_products = os.getenv('KAFKA_TOPIC_products', 'products')
+KAFKA_TOPIC_grupo_id = os.getenv('KAFKA_TOPIC_grupo_id', 'my_consumer_group')
 
-database_config = get_config()
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_HOST = os.getenv("DB_HOST")
+DB_PORT = os.getenv("DB_PORT")
+DB_NAME = os.getenv("DB_NAME")
 
-DATABASE_URL = database_config['database_url']
-REDIS_URL = database_config['redis_url']
-REDIS_EXPIRE_TIME = int(database_config['redis_expire_time'])
-KAFKA_SERVERS = database_config['kafka_servers']
-KAFKA_TOPIC_OUT = database_config['kafka_topic_out']
-KAFKA_TOPIC_IN = database_config['kafka_topic_in']
+DATABASE_URL = f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
+

@@ -1,14 +1,14 @@
 from confluent_kafka import Consumer
-
+from config import KAFKA_SERVERS
 from logs.logger import logger
 
 
 class KafkaConsumer:
-    def __init__(self, topic):
+    def __init__(self, topic,group_id, servers=KAFKA_SERVERS):
         self.consumer = Consumer(
             {
-                'bootstrap.servers': 'localhost:9092',
-                'group.id': 'my_consumer_group',
+                'bootstrap.servers': servers,
+                'group.id': group_id,
                 'auto.offset.reset': 'earliest',
             }
         )

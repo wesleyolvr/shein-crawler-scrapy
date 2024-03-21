@@ -5,54 +5,38 @@ from pydantic import BaseModel, validator
 
 
 class ProductBase(BaseModel):
-    id: int
+    product_id: int
     name: str
     sn: str
     url: str
-    imgs: List[str]
+    imgs: str
     category: str
     store_code: int = None
-    is_on_sale: int
+    is_on_sale: bool
     price_real_symbol: str
     price_real: float
     price_us_symbol: str
     price_us: float
-    discountPrice_real_symbol: str
-    discountPrice_price_real: float
-    discountPrice_price_us_symbol: str
-    discountPrice_us: float
+    discount_price_real_symbol: str
+    discount_price_real: float
+    discount_price_us_symbol: str
+    discount_price_us: float
     datetime_collected: str
 
 
 class ProductCreate(ProductBase):
-    @validator('imgs')
+    
+    @validator('name',pre=True)
     # pylint: disable=no-self-argument
-    def convert_to_json(cls, value):
-        """Converte a lista de URLs de imagens para uma string JSON."""
-        return json.dumps(value)
+    def truncate_name(cls, v):
+        # Trunca o nome para o tamanho máximo permitido
+        return v[:350]
 
-    @validator('store_code', 'is_on_sale', pre=True)
+    @validator('category',pre=True)
     # pylint: disable=no-self-argument
-    def convert_to_integer(cls, value):
-        """Converte para int."""
-        if value is None or value == '':
-            return 0
-        return int(value)
-
-    @validator(
-        'price_real',
-        'price_us',
-        'discountPrice_price_real',
-        'discountPrice_us',
-        pre=True,
-    )
-    # pylint: disable=no-self-argument
-    def check_comma_and_convert(cls, value):
-        """Verifica se o valor tem vírgula e converte para float."""
-        if ',' in str(value):
-            return float(value.replace(',', '.'))
-        return float(value)
-
+    def truncate_category(cls, v):
+        # Trunca a categoria para o tamanho máximo permitido
+        return v[:400]
 
 class ProductRead(ProductBase):
     datetime_collected: str

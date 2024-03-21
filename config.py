@@ -13,6 +13,7 @@ REDIS_EXPIRE_TIME = int(os.getenv('REDIS_EXPIRE_TIME', '3600'))
 KAFKA_SERVERS = os.getenv('KAFKA_SERVERS', 'localhost:9093')
 KAFKA_TOPIC_url = os.getenv('KAFKA_TOPIC_url', 'url_to_spider')
 KAFKA_TOPIC_products = os.getenv('KAFKA_TOPIC_products', 'products')
+KAFKA_TOPIC_grupo_id = os.getenv('KAFKA_TOPIC_grupo_id', 'my_consumer_group')
 
 DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")

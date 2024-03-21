@@ -1,10 +1,11 @@
 from confluent_kafka import Consumer
+
 from config import KAFKA_SERVERS
 from logs.logger import logger
 
 
 class KafkaConsumer:
-    def __init__(self, topic,group_id, servers=KAFKA_SERVERS):
+    def __init__(self, topic, group_id, servers=KAFKA_SERVERS):
         self.consumer = Consumer(
             {
                 'bootstrap.servers': servers,

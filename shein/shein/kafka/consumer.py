@@ -7,8 +7,7 @@ from config import KAFKA_SERVERS
 
 
 class KafkaConsumer:
-    def __init__(
-        self, topic, servers=KAFKA_SERVERS):
+    def __init__(self, topic, servers=KAFKA_SERVERS):
         self.consumer = Consumer(
             {
                 'bootstrap.servers': servers,

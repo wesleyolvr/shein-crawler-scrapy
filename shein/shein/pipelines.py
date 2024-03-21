@@ -1,11 +1,11 @@
 import json
 import sqlite3
 
-from config import KAFKA_SERVERS, KAFKA_TOPIC_products
-
 from confluent_kafka import Producer
 from scrapy import signals
 from scrapy.exceptions import DropItem
+
+from config import KAFKA_SERVERS, KAFKA_TOPIC_products
 
 
 class KafkaPipeline:
@@ -40,6 +40,7 @@ class KafkaPipeline:
 
     def spider_closed(self, spider, reason):
         pass
+
 
 class SQLitePipeline:
     def open_spider(self, spider):

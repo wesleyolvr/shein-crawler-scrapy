@@ -1,9 +1,8 @@
-from sqlalchemy import create_engine, func, inspect
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy import create_engine, func
+from sqlalchemy.orm import sessionmaker
 
 from api.schemas.price_history import PriceHistoryUpdate
 from api.schemas.product import ProductCreate, ProductRead
-from db.database import Base
 from db.models.price_history import PriceHistory
 from db.models.product import Product
 from logs.logger import logger
@@ -41,7 +40,7 @@ class DatabaseManager:
             discount_price_real=product_data.discount_price_real,
             discount_price_us_symbol=product_data.discount_price_us_symbol,
             discount_price_us=product_data.discount_price_us,
-            datetime_collected=product_data.datetime_collected
+            datetime_collected=product_data.datetime_collected,
         )
         self.session.add(new_product)
         self.session.commit()
@@ -104,9 +103,7 @@ class DatabaseManager:
             product.price_real_symbol = product_price.price_real_symbol
             product.price_us = product_price.price_us
             product.price_us_symbol = product_price.price_us_symbol
-            product.discount_price_real = (
-                product_price.discount_price_real
-            )
+            product.discount_price_real = product_price.discount_price_real
             product.discount_price_real_symbol = (
                 product_price.discount_price_real_symbol
             )
@@ -121,7 +118,11 @@ class DatabaseManager:
         """
         Retorna um produto do banco de dados com base no ID.
         """
-        return self.session.query(Product).filter_by(product_id=product_id).first()
+        return (
+            self.session.query(Product)
+            .filter_by(product_id=product_id)
+            .first()
+        )
 
     def get_product_by_title(self, product_read: ProductRead):
         """

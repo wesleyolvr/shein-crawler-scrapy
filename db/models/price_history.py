@@ -1,6 +1,8 @@
-from sqlalchemy import Column, Float, ForeignKey, Integer, String, TIMESTAMP
-from sqlalchemy.orm import relationship
 from datetime import datetime
+
+from sqlalchemy import TIMESTAMP, Column, Float, ForeignKey, Integer, String
+from sqlalchemy.orm import relationship
+
 from db.manager import Base
 
 
@@ -15,7 +17,7 @@ class PriceHistory(Base):
     price_us_symbol = Column(String)
     price_us = Column(Float)
     discount_price_real_symbol = Column(String)
-    discount_price_real = Column(Float)  
+    discount_price_real = Column(Float)
     discount_price_us_symbol = Column(String)
     discount_price_us = Column(Float)
     product_id = Column(Integer, ForeignKey('products.id'))

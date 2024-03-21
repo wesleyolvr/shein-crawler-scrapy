@@ -1,6 +1,3 @@
-import json
-from typing import List
-
 from pydantic import BaseModel, validator
 
 
@@ -25,18 +22,18 @@ class ProductBase(BaseModel):
 
 
 class ProductCreate(ProductBase):
-    
-    @validator('name',pre=True)
+    @validator('name', pre=True)
     # pylint: disable=no-self-argument
     def truncate_name(cls, v):
         # Trunca o nome para o tamanho máximo permitido
         return v[:350]
 
-    @validator('category',pre=True)
+    @validator('category', pre=True)
     # pylint: disable=no-self-argument
     def truncate_category(cls, v):
         # Trunca a categoria para o tamanho máximo permitido
         return v[:400]
+
 
 class ProductRead(ProductBase):
     datetime_collected: str

@@ -1,5 +1,5 @@
 from pydantic import BaseModel, validator
-from typing import List, Union
+
 
 class ProductItem(BaseModel):
     product_id: int
@@ -27,7 +27,7 @@ class ProductItem(BaseModel):
         if value is None or value == '':
             return 0
         return int(value)
-    
+
     @validator('imgs', pre=True)
     # pylint: disable=no-self-argument
     def convert_imgs_to_string(cls, value):
@@ -46,7 +46,7 @@ class ProductItem(BaseModel):
             return True
         else:
             return False
-    
+
     @validator('price_real', 'discount_price_real', pre=True)
     # pylint: disable=no-self-argument
     def convert_price(cls, value):
@@ -54,7 +54,7 @@ class ProductItem(BaseModel):
         if value is None or value == '':
             return 0
         return float(value)  # Converte para float após a substituição
-    
+
     @validator('name')
     # pylint: disable=no-self-argument
     def truncate_name(cls, v):

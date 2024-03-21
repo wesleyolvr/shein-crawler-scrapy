@@ -4,7 +4,7 @@ import logging
 import requests
 from confluent_kafka import Producer
 
-from config import KAFKA_SERVERS,KAFKA_TOPIC_url
+from config import KAFKA_SERVERS, KAFKA_TOPIC_url
 
 
 class SheinCategoryProducer:

@@ -1,5 +1,6 @@
 from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
+
 from api.schemas.product import ProductCreate, ProductRead
 from db.database import get_db
 from db.manager import DatabaseManager
@@ -29,7 +30,7 @@ def read_products(
     skip: int = 0, limit: int = 10, db: DatabaseManager = Depends(get_db)
 ):
     db_manager = DatabaseManager(db)
-    products = db.get_all_products()[skip : skip + limit]
+    products = db_manager.get_all_products()[skip : skip + limit]
     return products
 
 

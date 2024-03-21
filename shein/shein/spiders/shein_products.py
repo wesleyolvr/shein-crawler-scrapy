@@ -36,7 +36,6 @@ class SheinProductsSpider(scrapy.Spider):
     }
 
     categorys = []
-
     custom_settings = {
         'ITEM_PIPELINES': {
             'shein.pipelines.KafkaPipeline': 100,  # Prioridade 100
@@ -121,10 +120,8 @@ class SheinProductsSpider(scrapy.Spider):
                     )
                     yield item
                 except Exception as e:
-                    self.logger.error(
-                        f'Erro ao processar o item: {str(e)}'
-                    )
-               
+                    self.logger.error(f'Erro ao processar o item: {str(e)}')
+
             self.redis_cache.set_cache(self.categorys[0], '1')
         else:
             self.logger.info(

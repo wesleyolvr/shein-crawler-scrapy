@@ -1,10 +1,6 @@
-from sqlalchemy import Column, Float, Integer, String
+from sqlalchemy import TIMESTAMP, Column, Float, Integer, String
 from sqlalchemy.orm import relationship
 
-from db.manager import Base
-
-
-from sqlalchemy import Column, Integer, String, Float, TIMESTAMP
 from db.manager import Base
 
 
@@ -24,9 +20,9 @@ class Product(Base):
     price_real = Column(Float)
     price_us_symbol = Column(String)
     price_us = Column(Float)
-    discount_price_real_symbol = Column(String)  
-    discount_price_real = Column(Float)    
-    discount_price_us_symbol = Column(String)    
+    discount_price_real_symbol = Column(String)
+    discount_price_real = Column(Float)
+    discount_price_us_symbol = Column(String)
     discount_price_us = Column(Float)
     datetime_collected = Column(TIMESTAMP)
 

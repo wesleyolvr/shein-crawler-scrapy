@@ -77,9 +77,8 @@ class DatabaseManager:
 
                 product_price = PriceHistoryUpdate(
                     product_id=product_data.product_id,
-                    new_price=product_data.price_real,
-                    price_real_symbol=product_data.price_real_symbol,
                     price_real=product_data.price_real,
+                    price_real_symbol=product_data.price_real_symbol,
                     price_us_symbol=product_data.price_us_symbol,
                     price_us=product_data.price_us,
                     discount_price_real=product_data.discount_price_real,
@@ -101,7 +100,7 @@ class DatabaseManager:
             .first()
         )
         if product:
-            product.price_real = product_price.new_price
+            product.price_real = product_price.price_real
             product.price_real_symbol = product_price.price_real_symbol
             product.price_us = product_price.price_us
             product.price_us_symbol = product_price.price_us_symbol
@@ -152,7 +151,6 @@ class DatabaseManager:
         if product:
             new_price_history = PriceHistoryUpdate(
                 product_id=product_price.product_id,
-                new_price=product_price.new_price,
                 price_real_symbol=product_price.price_real_symbol,
                 price_real=product_price.price_real,
                 price_us_symbol=product_price.price_us_symbol,
@@ -163,7 +161,7 @@ class DatabaseManager:
                 discount_price_us=product_price.discount_price_us,
             )
             logger.info(
-                f'New price history for product {product.data_title} : new price : {product_price.new_price}'
+                f'New price history for product {product.name} : new price : {product_price.price_real}'
             )
             product.price_history.append(
                 new_price_history

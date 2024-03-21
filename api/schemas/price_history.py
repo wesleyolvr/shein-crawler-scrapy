@@ -27,12 +27,11 @@ class PriceHistoryRead(PriceHistoryBase):
 
 class PriceHistoryUpdate(PriceHistoryBase):
     product_id: int
-    new_price: float
     price_real_symbol: str
     price_real: float
     price_us_symbol: str
     price_us: float
-    discountprice_real_symbol: str
-    discountprice_price_real: float
-    discountprice_us_symbol: str
-    discountprice_us: float
+    discount_price_real_symbol: str
+    discount_price_real: float
+    discount_price_us_symbol: str
+    discount_price_us: float

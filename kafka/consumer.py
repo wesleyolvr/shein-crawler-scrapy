@@ -4,11 +4,11 @@ from logs.logger import logger
 
 
 class KafkaConsumer:
-    def __init__(self, topic, servers=KAFKA_SERVERS):
+    def __init__(self, topic,group_id, servers=KAFKA_SERVERS):
         self.consumer = Consumer(
             {
                 'bootstrap.servers': servers,
-                'group.id': 'my_consumer_group',
+                'group.id': group_id,
                 'auto.offset.reset': 'earliest',
             }
         )

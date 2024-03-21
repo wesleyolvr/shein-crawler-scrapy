@@ -90,8 +90,6 @@ class SheinProductsSpider(scrapy.Spider):
         if products:
             for product in products:
                 try:
-                    if not product.get('retailPrice'):
-                        continue
                     item = ProductItem(
                         product_id=product['goods_id'],
                         name=product['goods_name'],

@@ -97,7 +97,7 @@ class SheinProductsSpider(scrapy.Spider):
                         name=product['goods_name'],
                         sn=product['goods_sn'],
                         url=f"{self.url_base}/pdsearch/{product['goods_sn']}/",
-                        imgs=','.join(product['detail_image']),
+                        imgs=product['detail_image'],
                         category=product['goods_url_name'],
                         store_code=product['store_code'],
                         is_on_sale=product['is_on_sale'],
@@ -121,11 +121,12 @@ class SheinProductsSpider(scrapy.Spider):
                             '%Y-%m-%d %H:%M:%S'
                         ),
                     )
+                    yield item
                 except Exception as e:
                     self.logger.error(
                         f'Erro ao processar o item: {str(e)}'
                     )
-                yield item
+               
             self.redis_cache.set_cache(self.categorys[0], '1')
         else:
             self.logger.info(

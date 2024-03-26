@@ -4,12 +4,14 @@ from confluent_kafka import Producer
 
 from logs.logger import logger
 
+from config import KAFKA_SERVERS
+
 
 class KafkaProducer:
     def __init__(self):
         self.producer = Producer(
             {
-                'bootstrap.servers': 'localhost:9093',
+                'bootstrap.servers': KAFKA_SERVERS,
                 'client.id': 'python-producer',
             }
         )

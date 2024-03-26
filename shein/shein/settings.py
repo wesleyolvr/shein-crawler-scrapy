@@ -37,7 +37,7 @@ handle_httpstatus_list = [301, 302, 404, 403]
 # Adicione essa configuração para usar o KafkaPipeline
 # settings.py
 
-KAFKA_SERVERS = 'localhost:9093'
+KAFKA_SERVERS = 'kafka:9092'
 KAFKA_TOPIC_products = 'products'
 
 
@@ -64,8 +64,6 @@ RETRY_HTTP_CODES = [404, 403]
 
 DOWNLOADER_MIDDLEWARES = {
     'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 400,
-    'rotating_proxies.middlewares.RotatingProxyMiddleware': 610,
-    'rotating_proxies.middlewares.BanDetectionMiddleware': 620,
 }
 
 

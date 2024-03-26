@@ -46,7 +46,10 @@ class SheinCategoryProducer:
         return categories
 
     def produce_to_kafka(self, topic, categories):
-        conf = {'bootstrap.servers': self.kafka_bootstrap_servers}
+        conf = {
+            'bootstrap.servers': self.kafka_bootstrap_servers,
+            'partitioner': 'consistent'
+                }
         producer = Producer(**conf)
 
         for category_url in categories:
@@ -54,7 +57,7 @@ class SheinCategoryProducer:
                 'utf-8'
             )
             producer.produce(
-                topic, value=info_url, callback=self.delivery_report
+                topic=topic,value=info_url, callback=self.delivery_report
             )
 
         producer.flush()

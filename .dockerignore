@@ -1,0 +1,25 @@
+# Arquivos e diretórios a serem ignorados durante a construção da imagem Docker
+
+# Arquivos de banco de dados
+*.db
+
+# Arquivo de ambiente
+
+
+# Arquivo de configuração do Git
+.gitignore
+
+# Outros arquivos desnecessários
+temp/
+.vscode/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+*.md
+
+bitnami
+.venv
+.ruff_cache
+.pytest_cache

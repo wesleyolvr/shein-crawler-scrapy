@@ -20,7 +20,7 @@ class KafkaConsumer:
         while True:
             msg = self.consumer.poll(5.0)
             if msg is None:
-                logger.info('Não há mensagens')
+                logger.info('Aguardando mensagens...')
                 continue
             if msg.error():
                 logger.error(f'Erro no consumidor: {msg.error()}')

@@ -1,7 +1,7 @@
 from sqlalchemy import TIMESTAMP, Column, Float, Integer, String
 from sqlalchemy.orm import relationship
 
-from db.manager import Base
+from db.database import Base
 
 
 class Product(Base):

@@ -3,7 +3,8 @@ from datetime import datetime
 from sqlalchemy import TIMESTAMP, Column, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
-from db.manager import Base
+from db.database import Base
+
 
 
 class PriceHistory(Base):

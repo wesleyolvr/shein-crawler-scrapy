@@ -1,7 +1,7 @@
 import multiprocessing
 
 from api.database.manager import ProdutoProcessor
-from config import KAFKA_TOPIC_grupo_id, KAFKA_TOPIC_products
+from config import KAFKA_TOPIC_grupo_id, KAFKA_TOPIC_products, CONSUMERS_API
 
 
 def start_consumer(kafka_topic):
@@ -28,7 +28,7 @@ def start_consumers(num_consumers, kafka_topic):
 
 if __name__ == '__main__':
     # Definir o número de consumidores
-    num_consumers = 8  # Por exemplo, iniciar 3 consumidores
+    num_consumers = CONSUMERS_API  # Por exemplo, iniciar 3 consumidores
 
     # Iniciar os consumidores em processos separados
     start_consumers(

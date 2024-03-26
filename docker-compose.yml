@@ -1,6 +1,13 @@
 version: '3.3'
 
 services:
+
+  myapp:
+    build:
+      context: ./
+      dockerfile: Dockerfile  # Nome do Dockerfile a ser usado
+    networks:
+      - postgres-compose-network
   kafdrop:
     image: obsidiandynamics/kafdrop
     restart: "no"
@@ -10,6 +17,8 @@ services:
       KAFKA_BROKERCONNECT: "kafka:9092"
     depends_on:
       - "kafka"
+    networks:
+      - postgres-compose-network
 
   zookeeper:
     image: 'bitnami/zookeeper:3.7.0'
@@ -20,6 +29,8 @@ services:
       - ALLOW_ANONYMOUS_LOGIN=yes
     volumes:
       - ./bitnami/zookeeper:/bitnami/zookeeper
+    networks:
+      - postgres-compose-network
 
   kafka:
     image: 'bitnami/kafka:2.8.0'
@@ -30,7 +41,6 @@ services:
       - "9093"
     environment:
       - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-      - KAFKA_CREATE_TOPICS="products:2:1,url_to_spider:2:1"
       - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
       - KAFKA_CFG_LISTENERS=CLIENT://:9092,EXTERNAL://:9093
@@ -41,18 +51,22 @@ services:
       - zookeeper
     volumes:
       - ./bitnami/kafka:/bitnami/kafka
+    networks:
+      - postgres-compose-network
 
   redis:
     image: redis/redis-stack-server:latest
     container_name: redis-stack-server
     ports:
       - "6379:6379"
+    networks:
+      - postgres-compose-network
 
   postgres:
     image: postgres
     environment:
-      POSTGRES_USER: "wesley"
-      POSTGRES_PASSWORD: "wesley"
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "15432:5432"
     volumes:
@@ -63,8 +77,8 @@ services:
   pgadmin:
     image: dpage/pgadmin4
     environment:
-      PGADMIN_DEFAULT_EMAIL: "wesleyumsocaminho@gmail.com"
-      PGADMIN_DEFAULT_PASSWORD: "root"
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
     ports:
       - "16543:80"
     depends_on:

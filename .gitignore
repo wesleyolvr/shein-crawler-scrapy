@@ -9,7 +9,7 @@ __pycache__/
 
 bitnami
 *.db
-
+db_data
 *launch.json
 
 # C extensions

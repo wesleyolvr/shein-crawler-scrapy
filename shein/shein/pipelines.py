@@ -4,7 +4,7 @@ import sqlite3
 from confluent_kafka import Producer
 from scrapy import signals
 from scrapy.exceptions import DropItem
-from logging import logger
+import logging
 from config import KAFKA_SERVERS, KAFKA_TOPIC_products
 
 
@@ -34,7 +34,7 @@ class KafkaPipeline:
         try:
             self.producer.produce(KAFKA_TOPIC_products, message)
             self.producer.flush()
-            logger.info(
+            logging.info(
                 f"Item enviado com sucesso para o tópico '{self.topic}': '{message}'."
             )
         except Exception as e:

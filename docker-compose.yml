@@ -2,12 +2,25 @@ version: '3.3'
 
 services:
 
-  myapp:
+  app-consumer:
     build:
       context: ./
       dockerfile: Dockerfile  # Nome do Dockerfile a ser usado
     networks:
       - postgres-compose-network
+    depends_on:
+      - "kafka"
+      - "postgres"
+
+  app-producer:
+    build:
+      context: ./shein
+      dockerfile: Dockerfile  # Nome do Dockerfile a ser usado
+    networks:
+      - postgres-compose-network
+    depends_on:
+      - "kafka"
+      - "postgres"
   kafdrop:
     image: obsidiandynamics/kafdrop
     restart: "no"
@@ -70,6 +83,7 @@ services:
     ports:
       - "15432:5432"
     volumes:
+      - ./db_data:/var/lib/postgresql/data
       - ./db_create_tables.sql:/docker-entrypoint-initdb.d/db_create_tables.sql
     networks:
       - postgres-compose-network

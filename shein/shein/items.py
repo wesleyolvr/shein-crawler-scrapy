@@ -1,4 +1,4 @@
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, Field, root_validator, validator, field_validator
 
 
 class ProductItem(BaseModel):
@@ -7,7 +7,7 @@ class ProductItem(BaseModel):
     sn: str
     url: str
     imgs: str
-    category: str
+    category: str  # Campo privado para armazenar a categoria
     store_code: int = 0
     is_on_sale: bool
     price_real_symbol: str
@@ -28,16 +28,14 @@ class ProductItem(BaseModel):
             return 0
         return int(value)
 
-    @validator('imgs', pre=True)
-    # pylint: disable=no-self-argument
+    @field_validator('imgs', mode='before')
     def convert_imgs_to_string(cls, value):
         """Converte uma lista de imgs em uma string."""
         if value is None or value == '':
             return ''
         return ','.join(value)
 
-    @validator('is_on_sale', pre=True)
-    # pylint: disable=no-self-argument
+    @field_validator('is_on_sale', mode='before')
     def convert_is_on_sale(cls, value):
         """Converte para booleano."""
         if isinstance(value, bool):
@@ -47,22 +45,24 @@ class ProductItem(BaseModel):
         else:
             return False
 
-    @validator('price_real', 'discount_price_real', pre=True)
-    # pylint: disable=no-self-argument
+    @field_validator('price_real', 'discount_price_real')
     def convert_price(cls, value):
         """Converte para float."""
         if value is None or value == '':
             return 0
         return float(value)  # Converte para float após a substituição
 
-    @validator('name')
-    # pylint: disable=no-self-argument
+    @field_validator('name')
     def truncate_name(cls, v):
         # Trunca o nome para o tamanho máximo permitido
         return v[:350]
 
-    @validator('category')
-    # pylint: disable=no-self-argument
-    def truncate_category(cls, v):
+    @validator('category', always=True)
+    def validate_category(cls, v):
         # Trunca a categoria para o tamanho máximo permitido
         return v[:350]
+
+    @property
+    def category(self, value):
+        # Método para definir o valor do campo category e validar
+        self.category = self.validate_category(value)

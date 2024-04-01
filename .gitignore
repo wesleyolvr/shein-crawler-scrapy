@@ -7,6 +7,12 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+redis-data/
+
+*.csv
+
+*.conf
+
 bitnami
 *.db
 db_data

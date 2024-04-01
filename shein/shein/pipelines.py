@@ -34,9 +34,9 @@ class KafkaPipeline:
         try:
             self.producer.produce(KAFKA_TOPIC_products, message)
             self.producer.flush()
-            logging.info(
-                f"Item enviado com sucesso para o tópico '{self.topic}': '{message}'."
-            )
+            # logging.info(
+            #     f"Item enviado com sucesso para o tópico '{self.topic}': '{message}'."
+            # )
         except Exception as e:
             raise DropItem(f'Failed to send item to Kafka: {str(e)}')
         return item

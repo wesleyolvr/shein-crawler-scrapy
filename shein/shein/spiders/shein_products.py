@@ -1,6 +1,7 @@
 from datetime import datetime
 
 import scrapy
+import json
 
 from shein.cache.redis_cache import RedisCache
 from shein.items import ProductItem
@@ -11,29 +12,28 @@ class SheinProductsSpider(scrapy.Spider):
     allowed_domains = ['m.shein.com']
     url_base = 'https://m.shein.com/br'
     headers = {
-        'authority': 'm.shein.com/br',
-        'accept': 'application/json, text/plain, */*',
-        'accept-language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
-        'anti-in': '1_1.2.0_339c00_mHqKNQayozVzie1e1eOexOdmSDAKC4223xv-670_XXiiEOCtE2gRLe1ohNShayNi4XTZNIEYPrmVWa8Q48VMgZgMisxGcmvCLI9C5cez-cskyaBMvUNOyXDZNuGJDkZeQ7BrbQFvkvXO2eCtjcY99iv8ZlhDRoICwRUsIsrLueA4Zb7kqHav-6GKXz7UZLgzimYMx7y4I9xr7FiThkXFZbXhHRYheNbXEDRGQPtPtUZA-8ZFyYkq6VaXQCcxYAITtWX5TOczl_o3fO-CxnFR3zNKpUn7ASJrozFIU0kVH5mQtElI0LC6k0vxWnfyFzS15ii9kciRXK71WUTeMFnJV_rT3bfu97CcnzuVd47r6wWmKVaL4i33LS770LLGc-IVIqXlKJcsYqwwZOw1lacTSt7lHLQZ2yCfNRR54cXFRfu2NIh59yEPhWvQyUAoZPQ-ZbFt12ttWDg86QkDLh7Sbg',
-        'armortoken': 'T1_2.3.1_8cNFAa4O_Bb73t87kkrbRKr-Dew2EdoSJUIqSApdnL0RwLrGkOu1wj0U-A7TX_fs3SOy-7dXaVTYbs9dVS7LfTXvkRO-kpG9IbqVHa-BYPPjymkWL52gLs_jiaSzzQsHZCYEzNw-ONHJ3gzJyWS5dBX4ByiwCsgzm5XoGV6ik_Im2ZtNiXx69ZwsQQkiPyju_1710356529020',
-        # 'cookie': 'smidV2=202307181939240ecdf8b419d6708819c2d3b0d4073c09008ed54d6c28470c0; rskxRunCookie=0; rCookie=15p2kkck4h6f8vwmh9pbcolk8vnjwi; cto_bundle=gKB_qV9LMGdibU5DY3R0cTMxOXpsSURKU1pqN2o3TFVtTSUyRjhhRnNxRHNaeXhhOFNQQ0xOWGdPcHVXZEQ5SFdOblhPVzBkWHJBbHlrTVd1b0Fyb1ptJTJGS28zTlNLJTJGcEFjSE1lTXolMkZTNmNMQ0IlMkZpZ1BUd0dDM0RaNGh2TUtNeThQTyUyRkdvVTVEOVJEUFV5bSUyQlBxY2daRW80ZUFPQSUzRCUzRA; lastRskxRun=1695571958351; _ga_SC3MXK8VH1=GS1.1.1695571857.5.1.1695571958.59.0.0; _ga=GA1.1.999905272.1689719966; _uetvid=f303cf5025bb11eeb2545b2b230aa28f; inId=202401231418468d91e15b0f82a62f6775f5b12aac446200159b64f72afe710; cookieId=2ACE3BC0_C2C0_97D4_793A_5ABB5AFCD51E; armorUuid=2024020223362845c98645ab0957bc75f4d7fe23509ad8009859607a5ef40300; jump_to_mbr=1; g_state={"i_l":0}; country=BR; countryId=30; jump_to_mus=1; OptanonConsent=isGpcEnabled=0&datestamp=Wed+Mar+06+2024+18%3A12%3A42+GMT-0300+(Hor%C3%A1rio+Padr%C3%A3o+de+Bras%C3%ADlia)&version=202311.1.0&browserGpcFlag=0&isIABGlobal=false&hosts=&consentId=b4c2f38a-8fb7-4d85-ad7e-946d8a5030e2&interactionCount=1&landingPath=https%3A%2F%2Fm.shein.com%2Fus%2F%3Fref%3Dm%26rep%3Ddir%26ret%3Dmus&groups=C0001%3A1%2CC0003%3A1%2CSPD_BG%3A1%2CC0002%3A1%2CC0004%3A1; RESOURCE_ADAPT_WEBP=1; forterToken=0ee57ac8168f4af5935d5f1fc370cce8_1710298134593_768_UAS9_17ck; sessionID_shein_m_pwa=s%3ATll1rLBO9BnvSWx_AT1m52Ws2w1zQmCI.XM%2BRkpm8wZwzNlac7pRP55t%2B4gV9jlAUoSB%2ByLiH%2FxM; _abck=5A1EDC683300FA60AE1F74FFA8A15391~0~YAAQZKQSAqzudDWOAQAA9YimOAtYd9/i9RuhF++IubyRZ4N9YDPylvJ9Wd+hbqlghIm/r8pe8u2WWRFuBBhKgTds7T/l4nxkZ6uPQDk7xHCCO+wLlhub6Ak4VA/epfhYNrCZcvDhaZdSOYoH1RDDR2xNgYP+dxlRxoRhRETbQA0x6hkff//AvWo1f0+iZhpNDE2DdOUl4q5M0WprF4BQkVKI+iUQMEpL8ocLVzjIRWEv6yd4mR4bVp4DcldYCTqUr2ejzRgRc2WBRkJbFPVbbUTzK8iC9wbSZTMWxnnDOpVC+BQmJy1Odfu+DQmGk2HVwCMlQwnKSCg2vw9uvmZNoIg+g7quttI0wF13leaDy8O/KJqgN5YxfBOtv7RjHTr6ir6HOnwtVMM3Etia/E0PTyLlCUoO+cg=~-1~-1~-1; bm_sz=FC6F83E8933BE34480DD17BB6425779C~YAAQZKQSAq/udDWOAQAA9YimOBeJswED3+eiGEvNau4Oj7s+HnIvuoGUrcCCigC/HvWVQEgDKbpkidp3IR2SDLMeI6NtgLrN0XilywoDIJrIwtw6zAMo2Q6TqsIU48/JMCr2Ja254vwRpMg0mKsMMLM7FKWo5SOjRR/zL9bzNvmY/i3qhz3eL/0XAh5Z3vv6kmIgOb4HlGcYdP9o0+KQXXgPwTitMfnW/W0FrXL5JvvJD0rqa/kzHk9aBWIThINwdLtmspRZdV8/UkWKqeeXlAA0TUJdqoJ4O6OZfm4+R+ea5B1buuKkf4le8EEUK0R53OrQyhQPBCD04vgkNkSVnIBlJQl5uo2qBni4xjlGgXTUBj+XL3Q=~3290424~4536372; _fmdata=WktSk2tFwCrOgVLtn61lym8I7TuPP9AQYu41uuiROGkIVc%2FWc%2B5uEaRNzRa%2FdacRLmHP4EbCj1i0nbBKTP92%2Bw%3D%3D; c=yqz2Sexx-1689719964407-867c2f0df4f8f647663969; E0701BBE33D9FD0A=yqz2Sexx-1689719964407-867c2f0df4f8f647663969; _f_c_llbs_=K1901_1710356150_KvSG_kZBZXn3GdrqcbvytLCHXkvasymOpD789m4XT4c8iKT7rv1yr-oLVPrFdhdzS9lkruq-kxu256BEcDVOePaAPr1bIbyp8Gl0S4tEsLE5Y-McEDky5QC8eTCzDNUaYFZslE-qfumQmNCsfZp8b287jwztvjm-uIO7bCh5Zfi2dDxjY5Q6rI6Ft5g98ycpj-CBOyKzWRvnrSEGgsp71ngZLd8t-PWkozXSLFBkL4YdkbUamY6Qkxp4mcaEn15L7PhjMkxC3D5wEFi8EDfd156N345KaOivOqp4VVLB_f6JjEWe10RdN9gp0pnIDbOca1JnoIAQOEuH5c-pAEkT_A; bm_mi=79DA211F4BDBA00D36DD2791834735B6~YAAQWmdCF8OvCy6OAQAA/uMrORf3Mt3ykzojSIwGG2SVQzKDtEjIO4px38FavnH5RBEmIA1GwLW+ClMyNqWt3oX9stPawJ+nR7cPf0KPtHz++otlhIdNgNDhmvFLsGq7Wl+s6E0G6ygoCC7bMQd5O1RGeMhZRERw6UrwKvrVtMqV+vX5vCoJakJ0z4/c4acpQj6AK5N64wVHBc6SGw70fhuQKJ7DppOWDzta4+tocCTHIbdDcftN+fMvDcj+nX6Aq7bCP3mbNRrT33Y56ZoSfJQLTlXljgK7+L4MfJ5r+LC55eeVwsuup8EuxabsWsfc2cZFEBuQ66f2q8doGHJUJ+6lZwSvL5m+4II=~1; bm_sv=D3236563186AFC9239C9EB3F7A68E518~YAAQWmdCF3WzCy6OAQAAgPErORfFIR4aXz27DR1NsXRKS6X0tTEDdI2bzp4XmEDYJ6Y63URkGaljVk4d6HPcgZsPxq+C13LXkpyhiyDOtL4RJyykN9D0U9wUCWlUvT6Fv2wooCTyc1yNV58FFm+U+BkNLLxsjZCv0nZI3dLze9cvzYoquLDsb6QkKn7wVfdUPc6ohlO4oEdcriS5pvji3xl4R+FUl1ydar0q/8VMekClwMdRM4X3Su/idNcZnUS1~1; ak_bmsc=441EEBC4E4EBBC9DD08736F1DF475F09~000000000000000000000000000000~YAAQWmdCF4VFDC6OAQAAR5MtOReMgubjE66svndPLIUk9JFp7Z7MYyKCOSTMBfNXzkFuQJ2fTRSXDIZ+2Eo5kx8Yfdr35JA374OT6YnvCW2yOyQtzv0ZRYVPl9ubeg5r/t15M82TFLe48PgooEDiuI6AMBZ0muZTQVpdmZCkrrd80epfi6Rx+ACttis5kWL7J3YmNyr1jVFme5xDwVeAmG3GYoDWJBs4Hv5g57wnkP2KVfMl0wLy11F2sLK6KehNlJpy6DRNAgGzqIFD9AQ9Zp6r3ZeOT8CgC1V5I2qPrwUOHqFWA/PSs/79XZWuUJM9n2wT6pMrsmycjOmJfwi2TEdeBrWsTa8xhqRshwwifbi3vosJPH2+3XlUld4gVF9i1ZLeORs/KJRjNSeC4odNpX81sRUBYl9KFSjj4DU7CLlIQc3zt91iJwKKX2n0VTWWES/+v37oA8CY8iESyAuttz1Mf4vU; pwa_countryId=226; app_country=US; branchmbrbr=%5Em.shein.com%5C%2Fbr%5C%2F_-c-_-vc-_-sc-_-cat-_-p-_%5C%2Fcampaign%5C%2F_flash-sale; cf_clearance=v1CzqSUmj27lKCHtXsoJdWS8b0.pO2Wm8VM6AHyC7mo-1710356530-1.0.1.1-b2ONJ.gCuTLsyyLyey38GtP3F15j.rMUmGvjHpuqprEEMvtCSnQCtBC10w4vkVO3Gidf9clen28Lwxk3z41Rvg; 62BB9B5EB31B00B0=WktSk2tFwCrOgVLtn61lym8I7TuPP9AQYu41uuiROGny6tvRG6ZS%2BfiNzVPPuy3H8mrpWhqePaQGkdWQJ%2F%2BLtg%3D%3D; _xid=YkhkMIQ7I5j%2F0JZ3pBExARxImQPzVh6%2FNn5EvmRgIYE%3D; __cf_bm=bOQuawRStAfctBEKJwKV2741HvlNVP4JpGW9EiZ2RG8-1710356533-1.0.1.1-LcS695I5czwgRhOjhIUpUG1UsvXB5dtv4wa_c0o5GuLr8sTDzOzO2WP_V7xGKfs1V_0vbvmyyKQDlmMzucKVKw; _cfuvid=nXpnC6Nfd221ahHtVvw9JGq_ItwXR0RBq39nhBAosWE-1710356533139-0.0.1.1-604800000',
-        'local-time': '2024/3/13 16:2:18',
-        'referer': 'https://m.shein.com/br',
-        'screen-pixel': '686X554',
-        'sec-ch-ua': '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
-        'sec-ch-ua-mobile': '?1',
-        'sec-ch-ua-platform': '"Android"',
-        'sec-fetch-dest': 'empty',
-        'sec-fetch-mode': 'cors',
-        'sec-fetch-site': 'same-origin',
-        'smdeviceid': 'WHJMrwNw1k/GFp00r0LK9MaXfA3Wu9hrPWoJChLwNPqtE61wWGPusEvDKN0jdt4S3YzYPstCxXaXa2ONaJeHhzMSwLvA22uX8vTLYedm0UEk1+djV4N+GQM5g8LyURrS6TZOJg5hGkZYfhwDCeHJsqFqRPoL7FhKirjl+d2XxfVgeHFtPfuX8iNCpI3Tsb+2fTF5iRjvOBBLCNZetNNUFPuzuIEFgtRSwVQ/FNY66kYxsMiwK8usc45fglP7Dmafde5685hmEETs=1487582755342',
-        'timezone': 'GMT-3',
-        'uber-trace-id': 'ff28ddf5ba69c031:ff28ddf5ba69c031:0:0',
-        'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Mobile Safari/537.36',
-        'x-csrf-token': 'f1xJUxht-3oehszRN43UR_GmxGt2Jj3ZKTIM',
-        'x-gw-auth': 'a=xjqHR52UWJdjKJ0x6QrCsus66rNXR9@2.0.13&b=1710356538287&d=e7c5c76d23685b673b769b0b7672b4be&e=nn5lWZWZlMTNkM2U0NTI0NDJiZTBmNDk3NjUwYWQ2MDk2ZGIzNTEyYTk2ZDIwNGFkYjMzZTA1ODE1ZjZhYTY1YjE3MQ%3D%3D',
-        'x-requested-with': 'XMLHttpRequest',
-    }
+    'accept': 'application/json, text/plain, */*',
+    'accept-language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
+    'anti-in': '1_1.2.0_d9023c_jX-yX89ZqGWsAFlAtSg5cylcUS0MZ-dCUnIwBOg2Gu1onfwxX6fsBskqx0FbQxChqDgcpAioSGD6Ol6jQEKAMoVUZQ1uOCRNbYftRg4wLKdowdrmUYvHGASXkCfAIgutJdS32nx34sUVyy30Wm9rXFGa0jyA52ENLX9OEXKJnD8bSZJ0t2zCdn_7kIN-3feh0hzRTHiJoTnq1h3-vZrRTVMy_oJ9ryqPU37kxk_EBsFgReBaSjW6CFcHjkxXtc19GBYHYDz9KZznJTkbaeLoL-XTynX909xIGYRiQL-aNUGNqLXBDQQckstcmhyXO2ARs7_cDmtu1eWocrA1uey45mIBkqYJ1Z__mTepCBG8mmehC9SvZf22vXCv9-XUvoDcsviljQc8vvMhiDF9Du4miO3MeQ5pR1A7Lei-JtrevGbSL9KEt61mBbFfRPPwo1vCC1CwOLFe_5oWzLqciZxLqgX9R6GSacHDH1iPG07LHp-lMvQ3J6yBC1VyEqL3-EqYGMMdiGGF9QAemW4UdRnJM1GinYQz3uFAu-1xTufMh20',
+    'armortoken': 'T1_2.3.2_OPpk1HXXcuQjRiE-cGLsgAiKc_cEWOKLAAiSNeSaa2yAZjrthcMfrEON1aXfJLSWCP1qSlncqx67C51hEZRcbMT8CRFgHeumxs0DvuFhR_NTpl1zpUJdLIGcqIU4rM80eqXAp0kgRXl2Q0VC8f7JUCTgK6Qfxwua9oaqN7E_Gx1zHLXkbY4xQgjXPumZ0eqj_1711981003367',
+    # 'cookie': 'smidV2=202307181939240ecdf8b419d6708819c2d3b0d4073c09008ed54d6c28470c0; rskxRunCookie=0; rCookie=15p2kkck4h6f8vwmh9pbcolk8vnjwi; cto_bundle=gKB_qV9LMGdibU5DY3R0cTMxOXpsSURKU1pqN2o3TFVtTSUyRjhhRnNxRHNaeXhhOFNQQ0xOWGdPcHVXZEQ5SFdOblhPVzBkWHJBbHlrTVd1b0Fyb1ptJTJGS28zTlNLJTJGcEFjSE1lTXolMkZTNmNMQ0IlMkZpZ1BUd0dDM0RaNGh2TUtNeThQTyUyRkdvVTVEOVJEUFV5bSUyQlBxY2daRW80ZUFPQSUzRCUzRA; lastRskxRun=1695571958351; _ga_SC3MXK8VH1=GS1.1.1695571857.5.1.1695571958.59.0.0; _ga=GA1.1.999905272.1689719966; _uetvid=f303cf5025bb11eeb2545b2b230aa28f; inId=202401231418468d91e15b0f82a62f6775f5b12aac446200159b64f72afe710; cookieId=2ACE3BC0_C2C0_97D4_793A_5ABB5AFCD51E; armorUuid=2024020223362845c98645ab0957bc75f4d7fe23509ad8009859607a5ef40300; jump_to_mbr=1; jump_to_mus=1; OptanonConsent=isGpcEnabled=0&datestamp=Wed+Mar+06+2024+18%3A12%3A42+GMT-0300+(Hor%C3%A1rio+Padr%C3%A3o+de+Bras%C3%ADlia)&version=202311.1.0&browserGpcFlag=0&isIABGlobal=false&hosts=&consentId=b4c2f38a-8fb7-4d85-ad7e-946d8a5030e2&interactionCount=1&landingPath=https%3A%2F%2Fm.shein.com%2Fus%2F%3Fref%3Dm%26rep%3Ddir%26ret%3Dmus&groups=C0001%3A1%2CC0003%3A1%2CSPD_BG%3A1%2CC0002%3A1%2CC0004%3A1; _fmdata=WktSk2tFwCrOgVLtn61lym8I7TuPP9AQYu41uuiROGkIVc%2FWc%2B5uEaRNzRa%2FdacRLmHP4EbCj1i0nbBKTP92%2Bw%3D%3D; c=yqz2Sexx-1689719964407-867c2f0df4f8f647663969; E0701BBE33D9FD0A=yqz2Sexx-1689719964407-867c2f0df4f8f647663969; _abck=5A1EDC683300FA60AE1F74FFA8A15391~0~YAAQkGdCF8vUFDiOAQAAS0XhPAv8H08pc980s390weldDqdm5f/Qah3/8VjEJ6CbCcyKJdOx4WZwhGfKj/0ft/Uta8NtYyxiLcfdPvqQGrLXOxc69WGZpUnTH1XhhM5X6RkYqttXYLm6cj5fX4MctUtLwYBE2EJVe0Pr0s0Nk2/K2Nj6vBZah4xo/udenIZa5BLe+9DKoC8ef89RXFd8h1g9nVaT42VNn3tNRpggxZO+03SKQFuOVGyiIIEEESxXkD4K/nQAHdwD9RopF5LbFOkn3znYfESBY6rARL0adirOyVUJdek2DfahAmsNoD5l0RI6Tn/zLLsW7LZqP44kpdzzT5xLMpZzH1FlQXEQsmRZVBlizBoEDZ8ehf8R4cBfuI0mcqQBNe4LQLhYA7TNOiupGqFBL2Q=~-1~-1~-1; RESOURCE_ADAPT_WEBP=1; country=BR; countryId=30; forterToken=0ee57ac8168f4af5935d5f1fc370cce8_1711975686089_19_UDF9_17ck; location_ban=BR; _xid=2zKtjKYofTPkXflB5W9m8obuGZ0haGdoquJ0el6kEJ0%3D; g_state={"i_l":1,"i_p":1711986199886}; 62BB9B5EB31B00B0=WktSk2tFwCrOgVLtn61lym8I7TuPP9AQYu41uuiROGmlZrtPIXUB2jFrSUNY2KulohzUytf7qc5N0%2FYUo0yi1Q%3D%3D; _f_c_llbs_=K1901_1711979081_eog_QHZ33rhepT8aRnHz2b-zOfeXdL11dcfckebTZRXRRbmgW-g_lSuBcfey_UxR0Ja4irVygkwJfj-ua0kCtYKkwjQsSSujwwutgMMJAR__DQo-n_sCrKg-LFCQwY84tge206nqg13aWGEIJeKcc7IPky7q22cNWKSo8sxPWXSM9gJgHAHnAqqHO03k1y7AZeVaJL7osDSNFppSrDFKJ64-S7lqsQ1fuqAgUso5-w0nSmY3L6tALVmhC1HUeYOX3PTCdnjgdGK3M_V4q7u1mnITSrDPiorlRq7B2Sr7-iSiaQWQ-lt3kTAngS3gDxF_zZxlUN3mARqPh1Pi38jhiw; pwa_countryId=226; app_country=US; sessionID_shein_m_pwa=s%3AmISwmA0rt4HcQVvCd2BnQ3mKVSd-ZnnJ.0g3z%2FwPt4WDizYCO7obUkH%2FctL67tJv%2B6O6%2BKBfko7E; cf_clearance=.RvUY3AgTNMiAWvy9LrWzgG7SX6Y4HUlvkrsuMAGEyQ-1711981100-1.0.1.1-B1y6eB6LjzmRk64DVljhT2kZeXeP1rtTqrVjHuBaErHj2uC6iCpvYlDHEiBhclp6F24RAQ.WCRfvcbGuXHlBgQ; __cf_bm=hwetBxvNFVkAkLRlF_EsVhuF5pnvZuVOctj_LY0PkRc-1711981512-1.0.1.1-kzgXpQskhcfZ3AWEHV0pmRivpWYJsBQjQtZV1U4TQYdbcnTA6uFnKbgbvPAMpzKFA7jpaFdj6ZPOMStSKYy5pg; _cfuvid=Zj6SH.sajiJlspe7ZbivwZ48jjBwM7o_60g8w.oWfwY-1711981512473-0.0.1.1-604800000; branchmbrbr=-indexHome-',
+    'local-time': '2024/4/1 11:25:27',
+    'referer': 'https://m.shein.com/br/',
+    'screen-pixel': '686X540',
+    'sec-ch-ua': '"Google Chrome";v="123", "Not:A-Brand";v="8", "Chromium";v="123"',
+    'sec-ch-ua-mobile': '?1',
+    'sec-ch-ua-platform': '"Android"',
+    'sec-fetch-dest': 'empty',
+    'sec-fetch-mode': 'cors',
+    'sec-fetch-site': 'same-origin',
+    'smdeviceid': 'WHJMrwNw1k/GFp00r0LK9MaXfA3Wu9hrPWoJChLwNPqtE61wWGPusEvDKN0jdt4S3YzYPstCxXaXa2ONaJeHhzMSwLvA22uX8dCW1tldyDzmQI99+chXEilH1Hai/njq89lCUKKcsmkSqmJzoPeggwzYmmmXo8LlTkQE5YcNLqNriNYPfoOP/brSGTwDEQqy3FRRuSg/X1FURTkAd7H/eWpPfHpU6Y9P34nlXr6I24OILNJHmmY07b9rnv6GpOE7t1487582755342',
+    'timezone': 'GMT-3',
+    'uber-trace-id': 'ffe7eacecf1e3a74:ffe7eacecf1e3a74:0:0',
+    'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Mobile Safari/537.36',
+    'x-csrf-token': 'XwYBfImz-g4JNKVXF5tdWrlsX7-zTOynlg10',
+    'x-gw-auth': 'a=xjqHR52UWJdjKJ0x6QrCsus66rNXR9@2.0.13&b=1711981527344&d=e7c5c76d23685b673b769b0b7672b4be&e=JovOeNWZjOWFkMmMyZWIwZjY2Mjk5YTBhZjBhMzc4OGE5ZDgxMzY5NGU1NGFjODM2ZjA5YmY2NGM2NzhjMzI1NzEwOQ%3D%3D',
+    'x-requested-with': 'XMLHttpRequest',
+}
 
     categorys = []
     custom_settings = {
@@ -88,37 +88,45 @@ class SheinProductsSpider(scrapy.Spider):
         products = response.json()['goods']
         if products:
             for product in products:
+                if self.check_product_in_cache_and_if_price_updated(product):
+                    self.logger.info(
+                        f'Produto with name : {product["goods_name"]} e ID: {product["goods_id"]} atualizado. Pulando...'
+                    )
+                    continue
                 try:
                     item = ProductItem(
-                        product_id=product['goods_id'],
-                        name=product['goods_name'],
-                        sn=product['goods_sn'],
-                        url=f"{self.url_base}/pdsearch/{product['goods_sn']}/",
-                        imgs=product['detail_image'],
-                        category=product['goods_url_name'],
-                        store_code=product['store_code'],
-                        is_on_sale=product['is_on_sale'],
-                        price_real_symbol=product['retailPrice'][
-                            'amountWithSymbol'
-                        ],
-                        price_real=product['retailPrice']['amount'],
-                        price_us_symbol=product['retailPrice'][
-                            'usdAmountWithSymbol'
-                        ],
-                        price_us=product['retailPrice']['usdAmount'],
-                        discount_price_real_symbol=product['salePrice'][
-                            'amountWithSymbol'
-                        ],
-                        discount_price_real=product['salePrice']['amount'],
-                        discount_price_us_symbol=product['salePrice'][
-                            'usdAmountWithSymbol'
-                        ],
-                        discount_price_us=product['salePrice']['usdAmount'],
-                        datetime_collected=datetime.now().strftime(
-                            '%Y-%m-%d %H:%M:%S'
-                        ),
-                    )
+                            product_id=product['goods_id'],
+                            name=product['goods_name'],
+                            sn=product['goods_sn'],
+                            url=f"{self.url_base}/pdsearch/{product['goods_sn']}/",
+                            imgs=product['detail_image'],
+                            category=product['goods_url_name'],
+                            store_code=product['store_code'],
+                            is_on_sale=product['is_on_sale'],
+                            price_real_symbol=product['retailPrice'][
+                                'amountWithSymbol'
+                            ],
+                            price_real=product['retailPrice']['amount'],
+                            price_us_symbol=product['retailPrice'][
+                                'usdAmountWithSymbol'
+                            ],
+                            price_us=product['retailPrice']['usdAmount'],
+                            discount_price_real_symbol=product['salePrice'][
+                                'amountWithSymbol'
+                            ],
+                            discount_price_real=product['salePrice']['amount'],
+                            discount_price_us_symbol=product['salePrice'][
+                                'usdAmountWithSymbol'
+                            ],
+                            discount_price_us=product['salePrice']['usdAmount'],
+                            datetime_collected=datetime.now().strftime(
+                                '%Y-%m-%d %H:%M:%S'
+                            ),
+                        )
+                    item_json = json.dumps(dict(item))
+                    self.redis_cache.set_cache(f"product_{item.product_id}", item_json)
                     yield item
+                    
                 except Exception as e:
                     self.logger.error(f'Erro ao processar o item: {str(e)}')
 
@@ -127,3 +135,19 @@ class SheinProductsSpider(scrapy.Spider):
             self.logger.info(
                 f'Nenhum produto encontrado para a URL: {response.url}'
             )
+    
+    def check_product_in_cache_and_if_price_updated(self, product):
+        """
+        Verifica se o preço do produto está no cache e se o preço estar atualizado.
+        """
+        key = f"product_{product['goods_id']}"
+        if self.redis_cache.check_cache(key):
+            cached_product = self.redis_cache.get_cache(key)
+            if product['retailPrice']['amount'] == cached_product['price_real']:
+                return True
+            else:
+                return False
+        else:
+            return False
+        
+    

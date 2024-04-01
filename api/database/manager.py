@@ -20,15 +20,6 @@ class ProdutoProcessor:
         try:
             for mensagem in self.kafka_consumer.consume():
                 produto = json.loads(mensagem)
-                key = produto['product_id']
-                # checa se o produto esta no cache e se o valor de price_real é diferente do que esta no cache, se for diferente ou se não existir, armazena no cache
-                if (
-                    self.cache.check_cache(key)
-                    and self.cache.get_cache(key)['price_real']
-                    == produto['price_real']
-                ):
-                    print('Dados armazenados no cache.')
-                    continue
                 produto_bd = self.db_manager.get_product_by_id(
                     produto['product_id']
                 )
@@ -66,7 +57,9 @@ class ProdutoProcessor:
                         )
                         self.db_manager.update_product_price(update_data)
                         mensagem = json.dumps(produto)
-                        self.cache.set_cache('cached_data', mensagem)
+                        self.cache.set_cache(
+                            f"product_{produto['product_id']}", mensagem
+                        )
                 else:
                     try:
                         produto_create = ProductCreate(

@@ -67,17 +67,21 @@ services:
       - zookeeper
     volumes:
       - ./bitnami/kafka:/bitnami/kafka
-      - ./tmp:/tmp
     networks:
       - postgres-compose-network
 
   redis:
-    image: redis/redis-stack-server:latest
-    container_name: redis-stack-server
+    image: "redis:latest"
+    container_name: redis
+    restart: always
     ports:
       - "6379:6379"
+    volumes:
+      - ./redis-data:/data
     networks:
       - postgres-compose-network
+    command: ["redis-server", "--appendonly", "yes"]
+
 
   postgres:
     image: postgres
@@ -109,3 +113,7 @@ services:
 networks: 
   postgres-compose-network:
     driver: bridge
+
+volumes:
+  redis-data:
+    driver: local

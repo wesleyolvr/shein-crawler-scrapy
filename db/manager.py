@@ -1,6 +1,8 @@
 from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker
 
+from cache.redis_cache import RedisCache
+
 from api.schemas.price_history import PriceHistoryUpdate
 from api.schemas.product import ProductCreate, ProductRead
 from db.models.price_history import PriceHistory
@@ -15,6 +17,8 @@ class DatabaseManager:
 
         Session = sessionmaker(bind=self.engine)
         self.session = Session()
+        
+        self.redis_cache = RedisCache()
 
         # Se desejar, você pode adicionar lógica para criar tabelas
         # específicas do PostgreSQL aqui
@@ -118,19 +122,38 @@ class DatabaseManager:
         """
         Retorna um produto do banco de dados com base no ID.
         """
+        
+        product = self.get_product_in_cache(product_id)
+        if product:
+            return product
         return (
             self.session.query(Product)
             .filter_by(product_id=product_id)
             .first()
         )
+    
+    def get_product_in_cache(self, product_id: int):
+        """
+        Verifica se o preço do produto está no cache e se o preço estar atualizado.
+        """
+        key = f"product_{product_id}"
+        if self.redis_cache.check_cache(key):
+            cached_product = self.redis_cache.get_cache(key)
+            return cached_product
+        return False
+    def get_some_products(self, limit: int):
+        """
+        Retorna alguns produtos do banco de dados.
+        """
+        return self.session.query(Product).limit(limit).all()
 
     def get_product_by_title(self, product_read: ProductRead):
         """
         Retorna um produto do banco de dados com base no título.
         """
         return (
-            self.session.query(Product)
-            .filter_by(data_title=product_read['title'])
+            self.session.query(ProductRead)
+            .filter_by(name=product_read['title'])
             .first()
         )
 

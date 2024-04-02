@@ -1,4 +1,5 @@
 from pydantic import BaseModel, validator
+from datetime import datetime
 
 
 class ProductBase(BaseModel):
@@ -18,7 +19,7 @@ class ProductBase(BaseModel):
     discount_price_real: float
     discount_price_us_symbol: str
     discount_price_us: float
-    datetime_collected: str
+    datetime_collected: datetime
 
 
 class ProductCreate(ProductBase):
@@ -36,7 +37,7 @@ class ProductCreate(ProductBase):
 
 
 class ProductRead(ProductBase):
-    datetime_collected: str
+    datetime_collected: datetime
 
     class Config:
         from_attributes = True
